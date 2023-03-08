@@ -7,7 +7,7 @@
 class AutoEHRConfig(object):
     def __init__(
             self,
-            total_vocab_size=1624,
+            total_vocab_size=1625,
             code_vocab_size=1610,
             label_vocab_size=12,
             special_vocab_size=3,
@@ -22,7 +22,16 @@ class AutoEHRConfig(object):
             sample_batch_size=1024,
             epoch=50,
             lr=1e-4,
-            rules = [] # list of (which past visits, which codes from past visits, which codes in current visit, which output code in current visit, value to set output code to)
+            rules = [([], [], [], [1,6,8], [], 10, 1), # only current, positive
+                     ([], [], [], [2,9,8], [4, 99], 12, 0), # only current, negative
+                     ([], [], [], [3,6,8], [], 10, 1), # some nots in current
+                     (-1, [2,7,20], [], [1,6,8], [], 11, 1), # all past
+                     ([0, 1], [4,5,9], [], [1,6,8], [], 25, 1), # absolute past
+                     ([-1, -2], [25, 76, 222], [], [1,6,8], [], 32, 1), # relative past
+                     ([0, -1], [65, 77, 99], [], [1,6,8], [], 56, 1), # absolute and relative past
+                     ([0], [32, 44], [], [], [], 10, 1)] # no current 
+            
+            # list of (which past visits, which positive codes from past visits, which negative codes from past visits, which positive codes in current visit, which negative codes in the current visit, which output code in current visit, value to set output code to)
             
     ):
         self.total_vocab_size = total_vocab_size

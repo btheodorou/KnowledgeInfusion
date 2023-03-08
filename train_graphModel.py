@@ -4,9 +4,9 @@ import numpy as np
 import random
 import pickle
 from tqdm import tqdm
-from model import AutoEHRModel
+from ruleModels.graphModel import GraphModel
 from config import AutoEHRConfig
-
+torch.autograd.set_detect_anomaly(True)
 SEED = 4
 random.seed(SEED)
 np.random.seed(SEED)
@@ -27,13 +27,12 @@ else:
 if torch.cuda.is_available():
   torch.cuda.manual_seed_all(SEED)
 
-train_ehr_dataset = pickle.load(open('./data/trainDataset.pkl', 'rb'))
-train_ehr_dataset = [{'labels': p['labels'], 'visits': p['visits'][:96]} for p in train_ehr_dataset]
-val_ehr_dataset = pickle.load(open('./data/valDataset.pkl', 'rb'))
-val_ehr_dataset = [{'labels': p['labels'], 'visits': p['visits'][:96]} for p in val_ehr_dataset]
+train_ehr_dataset = pickle.load(open('./inpatient_data/trainDataset.pkl', 'rb'))
+val_ehr_dataset = pickle.load(open('./inpatient_data/valDataset.pkl', 'rb'))
 
 def get_batch(dataset, loc, batch_size):
   ehr = dataset[loc:loc+batch_size]
+    
   batch_ehr = np.zeros((len(ehr), config.n_ctx, config.total_vocab_size))
   batch_mask = np.zeros((len(ehr), config.n_ctx, 1))
   for i, p in enumerate(ehr):
@@ -53,11 +52,11 @@ def get_batch(dataset, loc, batch_size):
 def shuffle_training_data(train_ehr_dataset):
   np.random.shuffle(train_ehr_dataset)
 
-model = AutoEHRModel(config).to(device)
+model = GraphModel(config).to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
-if os.path.exists("./save/base_model"):
+if os.path.exists("./save/graph_model"):
   print("Loading previous model")
-  checkpoint = torch.load('./save/base_model', map_location=torch.device(device))
+  checkpoint = torch.load('./save/graph_model', map_location=torch.device(device))
   model.load_state_dict(checkpoint['model'])
   optimizer.load_state_dict(checkpoint['optimizer'])
 
@@ -100,5 +99,5 @@ for e in tqdm(range(config.epoch)):
               'optimizer': optimizer.state_dict(),
               'iteration': i
           }
-        torch.save(state, './save/base_model')
+        torch.save(state, './save/graph_model')
         print('\n------------ Save best model ------------\n')
