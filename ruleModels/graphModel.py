@@ -52,13 +52,13 @@ class GraphModel(AutoEHRModel):
             currMatrix = self.rulesCM[i]
             output_value = self.rulesOV[i]
             if pastMatrix.numel() == 0:
-                code_probs[((input_visits[:,1:] @ currMatrix) == 1)] = output_value
+                code_probs = torch.where((input_visits[:,1:] @ currMatrix) == 1, output_value, code_probs)
             else:
                 past_visits = pastVisits @ input_visits
                 if currMatrix.numel() == 0:
-                    code_probs[((past_visits[:,1:] @ pastMatrix) == 1)] = output_value
+                    code_probs = torch.where((past_visits[:,1:] @ pastMatrix) == 1, output_value, code_probs)
                 else:
-                    code_probs[((past_visits[:,1:] @ pastMatrix) == 1) & ((input_visits[:,1:] @ currMatrix) == 1)] = output_value
+                    code_probs = torch.where(((past_visits[:,1:] @ pastMatrix) == 1) & ((input_visits[:,1:] @ currMatrix) == 1), output_value, code_probs)
         if ehr_labels is not None:    
             shift_labels = ehr_labels[..., 1:, :].contiguous()
             if ehr_masks is not None:
