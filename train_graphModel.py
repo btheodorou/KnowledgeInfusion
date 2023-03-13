@@ -6,7 +6,7 @@ import pickle
 from tqdm import tqdm
 from ruleModels.graphModel import GraphModel
 from config import AutoEHRConfig
-torch.autograd.set_detect_anomaly(True)
+
 SEED = 4
 random.seed(SEED)
 np.random.seed(SEED)
@@ -16,7 +16,7 @@ config = AutoEHRConfig()
 local_rank = -1
 fp16 = False
 if local_rank == -1:
-  device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+  device = torch.device("cuda:6" if torch.cuda.is_available() else "cpu")
   n_gpu = torch.cuda.device_count()
 else:
   torch.cuda.set_device(local_rank)

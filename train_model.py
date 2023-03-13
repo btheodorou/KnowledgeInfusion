@@ -16,7 +16,7 @@ config = AutoEHRConfig()
 local_rank = -1
 fp16 = False
 if local_rank == -1:
-  device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+  device = torch.device("cuda:4" if torch.cuda.is_available() else "cpu")
   n_gpu = torch.cuda.device_count()
 else:
   torch.cuda.set_device(local_rank)
@@ -27,10 +27,8 @@ else:
 if torch.cuda.is_available():
   torch.cuda.manual_seed_all(SEED)
 
-train_ehr_dataset = pickle.load(open('./data/trainDataset.pkl', 'rb'))
-train_ehr_dataset = [{'labels': p['labels'], 'visits': p['visits'][:96]} for p in train_ehr_dataset]
-val_ehr_dataset = pickle.load(open('./data/valDataset.pkl', 'rb'))
-val_ehr_dataset = [{'labels': p['labels'], 'visits': p['visits'][:96]} for p in val_ehr_dataset]
+train_ehr_dataset = pickle.load(open('./inpatient_data/trainDataset.pkl', 'rb'))
+val_ehr_dataset = pickle.load(open('./inpatient_data/valDataset.pkl', 'rb'))
 
 def get_batch(dataset, loc, batch_size):
   ehr = dataset[loc:loc+batch_size]
