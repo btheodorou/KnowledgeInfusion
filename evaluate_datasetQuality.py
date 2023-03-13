@@ -7,8 +7,9 @@ from config import AutoEHRConfig
 from sklearn.metrics import r2_score
 
 config = AutoEHRConfig()
-train_ehr_dataset = pickle.load(open('./data/trainDataset.pkl', 'rb'))
-base_ehr_dataset = pickle.load(open('./results/datasets/baseDataset.pkl', 'rb'))
+train_ehr_dataset = pickle.load(open('./inpatient_data/trainDataset.pkl', 'rb'))
+base_ehr_dataset = pickle.load(open('./results/baseDataset.pkl', 'rb'))
+graph_ehr_dataset = pickle.load(open('./results/graphDataset.pkl', 'rb'))
 
 def generate_statistics(d):
     stats = {}
@@ -94,7 +95,7 @@ def generate_plots(stats1, stats2, label1, label2, types=["Per Record Code Proba
         # maxVal *= (0.3 if 'Sequential' in t else (0.45 if 'Code' in t else 0.3))
         plt.xlim([0,maxVal])
         plt.ylim([0,maxVal])
-        plt.title(f"{label} {t}")
+        plt.title(t)
         plt.xlabel(label1)
         plt.ylabel(label2)
         plt.annotate("r-squared = {:.3f}".format(r2), (0.1*maxVal, 0.9*maxVal))
@@ -103,12 +104,17 @@ def generate_plots(stats1, stats2, label1, label2, types=["Per Record Code Proba
 # Extract and save statistics
 train_ehr_stats = generate_statistics(train_ehr_dataset)
 base_ehr_stats = generate_statistics(base_ehr_dataset)
+graph_ehr_stats = generate_statistics(graph_ehr_dataset)
 pickle.dump(train_ehr_stats, open('results/dataset_stats/Train_Stats.pkl', 'wb'))
 pickle.dump(base_ehr_stats, open('results/dataset_stats/Base_Synthetic_Stats.pkl', 'wb'))
+pickle.dump(graph_ehr_stats, open('results/dataset_stats/Graph_Synthetic_Stats.pkl', 'wb'))
 print(train_ehr_stats["Aggregate"])
 print(base_ehr_stats["Aggregate"])
+print(graph_ehr_stats["Aggregate"])
 train_ehr_stats = pickle.load(open('results/dataset_stats/Train_Stats.pkl', 'rb'))
-autoehr_ehr_stats = pickle.load(open('results/dataset_stats/Base_Synthetic_Stats.pkl', 'rb'))
+base_ehr_stats = pickle.load(open('results/dataset_stats/Base_Synthetic_Stats.pkl', 'rb'))
+graph_ehr_stats = pickle.load(open('results/dataset_stats/Graph_Synthetic_Stats.pkl', 'rb'))
 
 # Plot per-code statistics
 generate_plots(train_ehr_stats, base_ehr_stats, "Training Data", "Base Synthetic Data")
+generate_plots(train_ehr_stats, graph_ehr_stats, "Training Data", "Graph Synthetic Data")

@@ -1,0 +1,32 @@
+Base Model:
+  Training Speed: 86.22 s/epoch for 63 epochs
+  Average Test Loss:  0.0007907993
+  Confusion Matrix:  [[33988968    25020]
+                      [  135750    53262]]
+  Accuracy:  0.9952995351284974
+  Precision:  0.680386295700161
+  Recall:  0.28179163227731574
+  F1 Score:  0.39852746414060924
+  Test Log Probability:  -526275.3784179688
+  Perplexity Per Visit:  72263230098.91888
+  Perplexity Per Positive Code:  16.18927567528743
+  Perplexity Per Possible Code:  1.0155058058335027
+  Generation Seconds Per Patient: 0.01720712393283844
+  Violations: 134
+
+
+Graph Model:
+  Training Speed: 101.06 s/epoch for 68 epochs
+  Average Test Loss:  0.0007895062
+  Confusion Matrix:  [[33988301    25687]
+                      [  135116    53896]]
+  Accuracy:  0.9952985703008508
+  Precision:  0.6772300616965935
+  Recall:  0.285145916661376
+  F1 Score:  0.4013179694335338
+  Test Log Probability:  -525415.7216796875
+  Perplexity Per Visit:  69371265870.42857
+  Perplexity Per Positive Code:  16.115811456187767
+  Perplexity Per Possible Code:  1.0154802824747904
+  Generation Seconds Per Patient: 0.012933577299118043
+  Violations: 0

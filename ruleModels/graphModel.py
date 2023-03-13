@@ -123,7 +123,7 @@ class GraphModel(AutoEHRModel):
             if pastMatrix.numel() == 0:
                 input_visits[(((input_visits @ currMatrix) + currBias) == 1)] = output_value
             else:
-                past_visits = pastVisits @ input_visits
+                past_visits = pastVisits[:input_visits.size(1), :input_visits.size(1)] @ input_visits
                 if currMatrix.numel() == 0:
                     input_visits[(((past_visits @ pastMatrix) + pastBias) == 1)] = output_value
                 else:
