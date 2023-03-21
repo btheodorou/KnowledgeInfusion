@@ -4,14 +4,14 @@ import random
 import numpy as np
 from tqdm import tqdm
 from sklearn import metrics
-from model import AutoEHRModel
-from config import AutoEHRConfig
+from model import HALOModel
+from config import HALOConfig
 
 SEED = 4
 random.seed(SEED)
 np.random.seed(SEED)
 torch.manual_seed(SEED)
-config = AutoEHRConfig()
+config = HALOConfig()
 
 device = torch.device("cuda:4" if torch.cuda.is_available() else "cpu")
 
@@ -46,7 +46,7 @@ def conf_mat(x, y):
   return np.array([[totalfalse - falsepos, falsepos], #true negatives, false positives
                    [totaltrue - truepos, truepos]]) #false negatives, true positives
 
-model = AutoEHRModel(config).to(device)
+model = HALOModel(config).to(device)
 checkpoint = torch.load('./save/base_model', map_location=torch.device(device))
 model.load_state_dict(checkpoint['model'])
 

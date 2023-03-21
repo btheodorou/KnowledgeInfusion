@@ -5,13 +5,13 @@ import numpy as np
 from tqdm import tqdm
 from sklearn import metrics
 from ruleModels.graphModel import GraphModel
-from config import AutoEHRConfig
+from config import HALOConfig
 
 SEED = 4
 random.seed(SEED)
 np.random.seed(SEED)
 torch.manual_seed(SEED)
-config = AutoEHRConfig()
+config = HALOConfig()
 
 device = torch.device("cuda:6" if torch.cuda.is_available() else "cpu")
 

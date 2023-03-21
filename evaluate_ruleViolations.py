@@ -3,12 +3,16 @@ import itertools
 import numpy as np
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-from config import AutoEHRConfig
+from config import HALOConfig
 from sklearn.metrics import r2_score
 
-config = AutoEHRConfig()
+config = HALOConfig()
 base_ehr_dataset = pickle.load(open('./results/baseDataset.pkl', 'rb'))
+base_plus_ehr_dataset = pickle.load(open('./results/basePlusDataset.pkl', 'rb'))
 graph_ehr_dataset = pickle.load(open('./results/graphDataset.pkl', 'rb'))
+graph_plus_ehr_dataset = pickle.load(open('./results/graphPlusDataset.pkl', 'rb'))
+graph_minus_ehr_dataset = pickle.load(open('./results/graphMinusDataset.pkl', 'rb'))
+
 
 def evaluateDataset(dataset, rules):
   violationsPerRule = []
@@ -44,8 +48,17 @@ def evaluateDataset(dataset, rules):
 
 # Extract and save statistics
 base_violations = evaluateDataset(base_ehr_dataset, config.rules)
+base_plus_violations = evaluateDataset(base_plus_ehr_dataset, config.rules)
 graph_violations = evaluateDataset(graph_ehr_dataset, config.rules)
+graph_plus_violations = evaluateDataset(graph_plus_ehr_dataset, config.rules)
+graph_minus_violations = evaluateDataset(graph_minus_ehr_dataset, config.rules)
 pickle.dump(base_violations, open('results/violation_stats/Base_Violation_Stats.pkl', 'wb'))
+pickle.dump(base_plus_violations, open('results/violation_stats/Base_Plus_Violation_Stats.pkl', 'wb'))
 pickle.dump(graph_violations, open('results/violation_stats/Graph_Violation_Stats.pkl', 'wb'))
+pickle.dump(graph_plus_violations, open('results/violation_stats/Graph_Plus_Violation_Stats.pkl', 'wb'))
+pickle.dump(graph_minus_violations, open('results/violation_stats/Graph_Minus_Violation_Stats.pkl', 'wb'))
 print(base_violations["Total Number"])
+print(base_plus_violations["Total Number"])
 print(graph_violations["Total Number"])
+print(graph_plus_violations["Total Number"])
+print(graph_minus_violations["Total Number"])

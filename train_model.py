@@ -4,14 +4,14 @@ import numpy as np
 import random
 import pickle
 from tqdm import tqdm
-from model import AutoEHRModel
-from config import AutoEHRConfig
+from model import HALOModel
+from config import HALOConfig
 
 SEED = 4
 random.seed(SEED)
 np.random.seed(SEED)
 torch.manual_seed(SEED)
-config = AutoEHRConfig()
+config = HALOConfig()
 
 local_rank = -1
 fp16 = False
@@ -51,7 +51,7 @@ def get_batch(dataset, loc, batch_size):
 def shuffle_training_data(train_ehr_dataset):
   np.random.shuffle(train_ehr_dataset)
 
-model = AutoEHRModel(config).to(device)
+model = HALOModel(config).to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
 if os.path.exists("./save/base_model"):
   print("Loading previous model")

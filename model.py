@@ -184,9 +184,9 @@ class FineAutoregressiveHead(nn.Module):
         code_logits = self.auto2(torch.relu(self.auto1(currVisit)))[:,:,self.n_embd-1:-1]
         return code_logits
 
-class AutoEHRModel(nn.Module):
+class HALOModel(nn.Module):
     def __init__(self, config):
-        super(AutoEHRModel, self).__init__()
+        super(HALOModel, self).__init__()
         self.transformer = CoarseTransformerModel(config)
         self.ehr_head = FineAutoregressiveHead(config)
 

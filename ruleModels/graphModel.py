@@ -1,8 +1,8 @@
 from model import *
 
-class GraphModel(AutoEHRModel):
+class GraphModel(HALOModel):
     def __init__(self, config):
-        super(AutoEHRModel, self).__init__()
+        super(HALOModel, self).__init__()
         self.transformer = CoarseTransformerModel(config)
         self.ehr_head = FineAutoregressiveHead(config)
         rulesPV = []
@@ -10,6 +10,7 @@ class GraphModel(AutoEHRModel):
         rulesPB = []
         rulesCM = []
         rulesCB = []
+        rulesOC = []
         rulesOV = []
         for (past_visits, past_codes, past_non_codes, current_codes, current_non_codes, output_code, output_value) in config.rules:
             if past_visits == -1:
@@ -51,13 +52,72 @@ class GraphModel(AutoEHRModel):
             rulesPB.append(nn.Parameter(pastBias, requires_grad=False))
             rulesCM.append(nn.Parameter(currMatrix, requires_grad=False)) 
             rulesCB.append(nn.Parameter(currBias, requires_grad=False))
-            rulesOV.append(output_value) 
-        # self.rules = nn.ParameterList(rules)
+            rulesOC.append(output_code)
+            rulesOV.append(output_value)
         self.rulesPV = nn.ParameterList(rulesPV)
         self.rulesPM = nn.ParameterList(rulesPM)
         self.rulesPB = nn.ParameterList(rulesPB)
         self.rulesCM = nn.ParameterList(rulesCM)
         self.rulesCB = nn.ParameterList(rulesCB)
+        self.rulesOC = rulesOC
+        self.rulesOV = rulesOV
+        
+    def reset_rules(self, config):
+        rulesPV = []
+        rulesPM = []
+        rulesPB = []
+        rulesCM = []
+        rulesCB = []
+        rulesOC = []
+        rulesOV = []
+        for (past_visits, past_codes, past_non_codes, current_codes, current_non_codes, output_code, output_value) in config.rules:
+            if past_visits == -1:
+                pastVisits = torch.tril(torch.ones(config.n_ctx, config.n_ctx), diagonal=-1)
+            else:
+                pastVisits = torch.zeros(config.n_ctx, config.n_ctx)
+                for v in past_visits:
+                    if v >= 0:
+                        pastVisits[v+1:,v] = 1
+                    else:
+                        pastVisits[list(range(-v, config.n_ctx)), [i + v for i in range(-v, config.n_ctx)]]
+            
+            if past_codes or past_non_codes:
+                pastMatrix = torch.zeros(config.total_vocab_size, config.total_vocab_size)
+                pastBias = torch.zeros(config.total_vocab_size)
+                pastMatrix[past_non_codes, output_code] = -1
+                if past_codes:
+                    pastMatrix[past_codes, output_code] = 1 / len(past_codes)
+                else:
+                    pastBias[output_code] = 1
+            else:
+                pastMatrix = None
+                pastBias = None
+            
+            if current_codes or current_non_codes:
+                currMatrix = torch.zeros(config.total_vocab_size, config.total_vocab_size)
+                currBias = torch.zeros(config.total_vocab_size)
+                currMatrix[current_non_codes, output_code] = -1
+                if current_codes:
+                    currMatrix[current_codes, output_code] = 1 / len(current_codes)
+                else:
+                    currBias[output_code] = 1
+            else:
+                currMatrix = None
+                currBias = None
+            
+            rulesPV.append(nn.Parameter(pastVisits, requires_grad=False)) 
+            rulesPM.append(nn.Parameter(pastMatrix, requires_grad=False)) 
+            rulesPB.append(nn.Parameter(pastBias, requires_grad=False))
+            rulesCM.append(nn.Parameter(currMatrix, requires_grad=False)) 
+            rulesCB.append(nn.Parameter(currBias, requires_grad=False))
+            rulesOC.append(output_code)
+            rulesOV.append(output_value) 
+        self.rulesPV = nn.ParameterList(rulesPV)
+        self.rulesPM = nn.ParameterList(rulesPM)
+        self.rulesPB = nn.ParameterList(rulesPB)
+        self.rulesCM = nn.ParameterList(rulesCM)
+        self.rulesCB = nn.ParameterList(rulesCB)
+        self.rulesOC = rulesOC
         self.rulesOV = rulesOV
 
     def forward(self, input_visits, position_ids=None, ehr_labels=None, ehr_masks=None, past=None):
@@ -128,5 +188,45 @@ class GraphModel(AutoEHRModel):
                     input_visits[(((past_visits @ pastMatrix) + pastBias) == 1)] = output_value
                 else:
                     input_visits[(((past_visits @ pastMatrix) + pastBias) == 1) & (((input_visits @ currMatrix) + currBias) == 1)] = output_value
+        
+        return input_visits
+    
+    def sample_plus(self, input_visits, random=True):
+        sig = nn.Sigmoid()
+        hidden_states = self.transformer(input_visits)
+        i = 0
+        while i < self.ehr_head.tot_vocab:
+            next_logits = self.ehr_head.sample(hidden_states, input_visits)
+            next_probs = sig(next_logits)
+            if random:
+                visit = torch.bernoulli(next_probs)
+            else:
+                visit = torch.round(next_probs)
+            
+            remaining_visit = visit[:,0,i:]
+            nonzero = torch.nonzero(remaining_visit, as_tuple=True)[1]
+            if nonzero.numel() == 0:
+                break
+
+            first_nonzero = nonzero.min()
+            input_visits[:,-1,i + first_nonzero] = visit[:,0,i + first_nonzero]
+            i = i + first_nonzero + 1
+            
+            for j in range(len(self.rulesOV)):
+                if self.rulesOC[j] < i:
+                    pastVisits = self.rulesPV[j]
+                    pastMatrix = self.rulesPM[j]
+                    pastBias = self.rulesPB[j]
+                    currMatrix = self.rulesCM[j]
+                    currBias = self.rulesCB[j]
+                    output_value = self.rulesOV[j]
+                    if pastMatrix.numel() == 0:
+                        input_visits[(((input_visits @ currMatrix) + currBias) == 1)] = output_value
+                    else:
+                        past_visits = pastVisits[:input_visits.size(1), :input_visits.size(1)] @ input_visits
+                        if currMatrix.numel() == 0:
+                            input_visits[(((past_visits @ pastMatrix) + pastBias) == 1)] = output_value
+                        else:
+                            input_visits[(((past_visits @ pastMatrix) + pastBias) == 1) & (((input_visits @ currMatrix) + currBias) == 1)] = output_value
         
         return input_visits

@@ -1,6 +1,6 @@
 import pickle
 
-class AutoEHRConfig(object):
+class HALOConfig(object):
     def __init__(
             self,
             total_vocab_size=1625,

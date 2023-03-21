@@ -14,7 +14,6 @@ Base Model:
   Generation Seconds Per Patient: 0.01720712393283844
   Violations: 134
 
-
 Graph Model:
   Training Speed: 101.06 s/epoch for 68 epochs
   Average Test Loss:  0.0007895062
@@ -28,5 +27,84 @@ Graph Model:
   Perplexity Per Visit:  69371265870.42857
   Perplexity Per Positive Code:  16.115811456187767
   Perplexity Per Possible Code:  1.0154802824747904
-  Generation Seconds Per Patient: 0.012933577299118043
+  Generation Seconds Per Patient: 0.01272880383014679
+  Violations: 0
+
+Graph Model Plus:
+  Training Speed: 101.06 s/epoch for 68 epochs
+  Average Test Loss:  0.0007895062
+  Confusion Matrix:  [[33988301    25687]
+                      [  135116    53896]]
+  Accuracy:  0.9952985703008508
+  Precision:  0.6772300616965935
+  Recall:  0.285145916661376
+  F1 Score:  0.4013179694335338
+  Test Log Probability:  -525415.7216796875
+  Perplexity Per Visit:  69371265870.42857
+  Perplexity Per Positive Code:  16.115811456187767
+  Perplexity Per Possible Code:  1.0154802824747904
+  Generation Seconds Per Patient: 0.12489358336925506
+  Violations: 0
+
+Graph Model Minus:
+  Training Speed: 101.06 s/epoch for 68 epochs
+  Average Test Loss:  0.0008119572
+  Confusion Matrix:  [[33979986    34002]
+                      [  135168    53844]]
+  Accuracy:  0.9950539426366108
+  Precision:  0.6129362748446144
+  Recall:  0.28487080185385055
+  F1 Score:  0.38896474004724446
+  Test Log Probability:  -540320.7592773438
+  Perplexity Per Visit:  140839060437.77402
+  Perplexity Per Positive Code:  17.438117899487185
+  Perplexity Per Possible Code:  1.0159229065198858
+  Generation Seconds Per Patient: 0.02958841022968292
+  Violations: 91256
+
+Base Model Plus:
+  Training Speed: 86.22 s/epoch for 63 epochs
+  Average Test Loss:  0.00079064193
+  Confusion Matrix:  [[33988968    25020]
+                      [  135698    53314]]
+  Accuracy:  0.9953010554629711
+  Precision:  0.6805984629918044
+  Recall:  0.2820667470848412
+  F1 Score:  0.39883895775511885
+  Test Log Probability:  -526169.23046875
+  Perplexity Per Visit:  71899714124.72003
+  Perplexity Per Positive Code:  16.18018643246225
+  Perplexity Per Possible Code:  1.0155026542476349
+  Generation Seconds Per Patient: 0.015332816882133483
+  Violations: 0
+
+Graph Module Tuned:
+  Average Test Loss:  0.00079174805
+  Confusion Matrix:  [[33989094    24894]
+                      [  136052    52960]]
+  Accuracy:  0.9952943893810484
+  Precision:  0.6802476430241221
+  Recall:  0.2801938501259179
+  F1 Score:  0.39690331477220775
+  Test Log Probability:  -526883.7573242188
+  Perplexity Per Visit:  74382431841.29634
+  Perplexity Per Positive Code:  16.241468561648222
+  Perplexity Per Possible Code:  1.015523869097137
+  Generation Seconds Per Patient: 0.01421948429107666
+  Violations: 0
+
+Graph Model New Order:
+  Training Speed: 100.87 s/epoch for 68 epochs
+  Average Test Loss:  0.0007898142
+  Confusion Matrix:  [[33988120    25868]
+                      [  135098    53914]]
+  Accuracy:  0.9952938046370201
+  Precision:  0.6757664636133464
+  Recall:  0.2852411487101348
+  F1 Score:  0.4011547876812726
+  Test Log Probability:  -525615.0703125
+  Perplexity Per Visit:  70031412335.13649
+  Perplexity Per Positive Code:  16.132817570907218
+  Perplexity Per Possible Code:  1.0154862011133863
+  Generation Seconds Per Patient: 0.014122605848312379
   Violations: 0

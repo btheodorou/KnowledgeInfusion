@@ -5,13 +5,13 @@ import random
 import pickle
 from tqdm import tqdm
 from ruleModels.graphModel import GraphModel
-from config import AutoEHRConfig
+from config import HALOConfig
 
 SEED = 4
 random.seed(SEED)
 np.random.seed(SEED)
 torch.manual_seed(SEED)
-config = AutoEHRConfig()
+config = HALOConfig()
 
 local_rank = -1
 fp16 = False
