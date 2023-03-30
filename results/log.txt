@@ -108,3 +108,8 @@ Graph Model New Order:
   Perplexity Per Possible Code:  1.0154862011133863
   Generation Seconds Per Patient: 0.014122605848312379
   Violations: 0
+
+Graph Model Baseline Speed:
+  Training Speed: 102.58 s/epoch for 68 epochs
+  Generation Seconds Per Patient: 0.01400981699466705304SerenoSoccer99!
+  

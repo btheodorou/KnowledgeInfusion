@@ -14,7 +14,9 @@ class HALOConfig(object):
             n_head=12,
             layer_norm_epsilon=1e-5,
             initializer_range=0.02,
+            semantic_w=0.1,
             batch_size=256,
+            ccn_batch_size=16,
             sample_batch_size=1024,
             epoch=500,
             lr=1e-4,
@@ -42,7 +44,9 @@ class HALOConfig(object):
         self.n_head = n_head
         self.layer_norm_epsilon = layer_norm_epsilon
         self.initializer_range = initializer_range
+        self.semantic_w = semantic_w
         self.batch_size = batch_size
+        self.ccn_batch_size = ccn_batch_size
         self.sample_batch_size = sample_batch_size
         self.epoch = epoch
         self.lr = lr

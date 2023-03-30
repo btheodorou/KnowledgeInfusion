@@ -11,21 +11,11 @@ SEED = 4
 random.seed(SEED)
 np.random.seed(SEED)
 torch.manual_seed(SEED)
-config = HALOConfig(rules=pickle.load(open('inpatient_data/rules2.pkl', 'rb')))
-
-local_rank = -1
-fp16 = False
-if local_rank == -1:
-  device = torch.device("cuda:6" if torch.cuda.is_available() else "cpu")
-  n_gpu = torch.cuda.device_count()
-else:
-  torch.cuda.set_device(local_rank)
-  device = torch.device("cuda", local_rank)
-  n_gpu = 1
-  # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
-  torch.distributed.init_process_group(backend='nccl')
 if torch.cuda.is_available():
   torch.cuda.manual_seed_all(SEED)
+
+config = HALOConfig(rules=pickle.load(open('inpatient_data/rules2.pkl', 'rb')))
+device = torch.device("cuda:6" if torch.cuda.is_available() else "cpu")
 
 train_ehr_dataset = pickle.load(open('./inpatient_data/trainDataset.pkl', 'rb'))
 val_ehr_dataset = pickle.load(open('./inpatient_data/valDataset.pkl', 'rb'))
@@ -64,9 +54,8 @@ if os.path.exists("./save/graph_model_newOrder"):
 global_loss = 1e10
 for e in tqdm(range(config.epoch)):
   shuffle_training_data(train_ehr_dataset)
-  for i in range(0, len(train_ehr_dataset), config.batch_size):
-    model.train()
-    
+  model.train()
+  for i in range(0, len(train_ehr_dataset), config.batch_size):    
     batch_ehr, batch_mask = get_batch(train_ehr_dataset, i, config.batch_size)
     batch_ehr = torch.tensor(batch_ehr, dtype=torch.float32).to(device)
     batch_mask = torch.tensor(batch_mask, dtype=torch.float32).to(device)

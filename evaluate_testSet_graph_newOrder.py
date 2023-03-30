@@ -11,8 +11,10 @@ SEED = 4
 random.seed(SEED)
 np.random.seed(SEED)
 torch.manual_seed(SEED)
-config = HALOConfig(rules=pickle.load(open('inpatient_data/rules2.pkl', 'rb')))
+if torch.cuda.is_available():
+  torch.cuda.manual_seed_all(SEED)
 
+config = HALOConfig(rules=pickle.load(open('inpatient_data/rules2.pkl', 'rb')))
 device = torch.device("cuda:6" if torch.cuda.is_available() else "cpu")
 
 train_ehr_dataset = pickle.load(open('./inpatient_data/trainDataset.pkl', 'rb'))
