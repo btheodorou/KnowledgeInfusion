@@ -16,7 +16,7 @@ if torch.cuda.is_available():
   torch.cuda.manual_seed_all(SEED)
 
 config = HALOConfig()
-NUM_GENERATIONS = 50000
+NUM_GENERATIONS = 100000
 device = torch.device("cuda:6" if torch.cuda.is_available() else "cpu")
 
 def sample_sequence(model, length, context, batch_size, device='cuda', sample=True):

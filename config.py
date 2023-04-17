@@ -3,9 +3,9 @@ import pickle
 class HALOConfig(object):
     def __init__(
             self,
-            total_vocab_size=1625,
+            total_vocab_size=1619,
             code_vocab_size=1610,
-            label_vocab_size=12,
+            label_vocab_size=6,
             special_vocab_size=3,
             n_positions=45,
             n_ctx=45,
