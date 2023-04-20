@@ -11,7 +11,7 @@ class ConSequenceModel(HALOModel):
         rulesRO = []
         currPast = None
         currOutputs = set()
-        for (past_visits, past_codes, past_non_codes, current_codes, current_non_codes, output_code, output_value) in config.rules:
+        for i, (past_visits, past_codes, past_non_codes, current_codes, current_non_codes, output_code, output_value) in enumerate(config.rules):
             if currPast != past_visits or any([c in currOutputs for c in current_codes + current_non_codes + [output_code]]):
                 # Add the last group of rules
                 if currPast is not None:
@@ -126,7 +126,7 @@ class ConSequenceModel(HALOModel):
             ruleNeuron = self.rulesRN[i]
             ruleThreshold = self.rulesRT[i]
             ruleOutput = self.rulesRO[i]
-            past_visits = pastVisits @ input_visits
+            past_visits = (pastVisits @ input_visits).bool().float()
             neuron_input = torch.cat((input_visits, past_visits), dim=-1)[:,1:]
             code_probs = torch.where((neuron_input @ ruleNeuron) == ruleThreshold, ruleOutput, code_probs)
         if ehr_labels is not None:    
@@ -167,24 +167,8 @@ class ConSequenceModel(HALOModel):
             ruleNeuron = self.rulesRN[i]
             ruleThreshold = self.rulesRT[i]
             ruleOutput = self.rulesRO[i]
-            past_visits = pastVisits[:input_visits.size(1), :input_visits.size(1)] @ input_visits
+            past_visits = (pastVisits[:input_visits.size(1), :input_visits.size(1)] @ input_visits).bool().float()
             neuron_input = torch.cat((input_visits, past_visits), dim=-1)
             input_visits = torch.where((neuron_input @ ruleNeuron) == ruleThreshold, ruleOutput, input_visits)
-      
-        # for i in range(len(self.rulesOV)):
-        #     pastVisits = self.rulesPV[i]
-        #     pastMatrix = self.rulesPM[i]
-        #     pastBias = self.rulesPB[i]
-        #     currMatrix = self.rulesCM[i]
-        #     currBias = self.rulesCB[i]
-        #     output_value = self.rulesOV[i]
-        #     if pastMatrix.numel() == 0:
-        #         input_visits[(((input_visits @ currMatrix) + currBias) == 1)] = output_value
-        #     else:
-        #         past_visits = pastVisits[:input_visits.size(1), :input_visits.size(1)] @ input_visits
-        #         if currMatrix.numel() == 0:
-                    # input_visits[(((past_visits @ pastMatrix) + pastBias) == 1)] = output_value
-        #         else:
-        #             input_visits[(((past_visits @ pastMatrix) + pastBias) == 1) & (((input_visits @ currMatrix) + currBias) == 1)] = output_value
-        
+
         return input_visits

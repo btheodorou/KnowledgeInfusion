@@ -20,6 +20,7 @@ device = torch.device("cuda:5" if torch.cuda.is_available() else "cpu")
 
 train_ehr_dataset = pickle.load(open('./inpatient_data/trainDataset.pkl', 'rb'))
 val_ehr_dataset = pickle.load(open('./inpatient_data/valDataset.pkl', 'rb'))
+PATIENCE = 5
 
 def get_batch(dataset, loc, batch_size):
   ehr = dataset[loc:loc+batch_size]
@@ -53,6 +54,7 @@ if os.path.exists("./save/consequence_model"):
 
 # Train
 global_loss = 1e10
+patience = 0
 for e in tqdm(range(config.epoch)):
   shuffle_training_data(train_ehr_dataset)
   model.train()
@@ -83,6 +85,7 @@ for e in tqdm(range(config.epoch)):
     cur_val_loss = np.mean(val_l)
     print("Epoch %d Validation Loss:%.7f"%(e, cur_val_loss))
     if cur_val_loss < global_loss:
+      patience = 0
       global_loss = cur_val_loss
       state = {
             'model': model.state_dict(),
@@ -91,3 +94,7 @@ for e in tqdm(range(config.epoch)):
         }
       torch.save(state, './save/consequence_model')
       print('\n------------ Save best model ------------\n')
+    else:
+      patience += 1
+      if patience == PATIENCE:
+        break

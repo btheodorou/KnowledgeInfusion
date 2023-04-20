@@ -22,26 +22,21 @@ for l in range(config.label_vocab_size):
 print('RULE LENGTH: ', len(rules))
 
 multiVisit = [p for p in data if len(p['visits']) > 1]
-codeCounts = {}
 condCounts = {}
 for p in multiVisit:
     soFar = set()
     for i, v in enumerate(p['visits']):
         for c in set(v):
-            if i > 0:
-                if c not in codeCounts:
-                    codeCounts[c] = 1
-                else:
-                    codeCounts[c] += 1
-                if c not in condCounts:
-                    condCounts[c] = Counter()
-                for pc in soFar:
-                    condCounts[c][pc] += 1
+            if c not in condCounts:
+                condCounts[c] = Counter()
+            for pc in soFar:
+                condCounts[c][pc] += 1
+        for c in set(v):
             soFar.add(c)
-for c in codeCounts:
-    if overallPrevalences[c] >= 50 and codeCounts[c] >= 10:
+for c in condCounts:
+    if overallPrevalences[c] >= 10:
         for pc in condCounts[c]:
-            if condCounts[c][pc] == codeCounts[c]:
+            if condCounts[c][pc] == overallPrevalences[c]:
                 rules.append((-1, [], [], [], [pc], c, 0))
 print('RULE LENGTH: ', len(rules))
                 
@@ -89,15 +84,9 @@ for p in data:
                 pairCounts[cs] += 1
 for cs in pairCounts:
     if pairCounts[cs] == overallPrevalences[cs[0]] and overallPrevalences[cs[0]] >= 10:
-        rules.append(([], [], [], [cs[1]], [], cs[0], 1))
-    elif pairCounts[cs] == overallPrevalences[cs[1]] and overallPrevalences[cs[1]] >= 10:
         rules.append(([], [], [], [cs[0]], [], cs[1], 1))
+    elif pairCounts[cs] == overallPrevalences[cs[1]] and overallPrevalences[cs[1]] >= 10:
+        rules.append(([], [], [], [cs[1]], [], cs[0], 1))
 print('RULE LENGTH: ', len(rules))
-
-
-
-
-
-
 
 pickle.dump(rules, open('./inpatient_data/rules.pkl', 'wb'))

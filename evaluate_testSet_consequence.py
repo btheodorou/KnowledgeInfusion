@@ -15,7 +15,7 @@ if torch.cuda.is_available():
   torch.cuda.manual_seed_all(SEED)
 
 config = HALOConfig()
-device = torch.device("cuda:6" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:5" if torch.cuda.is_available() else "cpu")
 
 train_ehr_dataset = pickle.load(open('./inpatient_data/trainDataset.pkl', 'rb'))
 test_ehr_dataset = pickle.load(open('./inpatient_data/testDataset.pkl', 'rb'))
@@ -34,7 +34,7 @@ def get_batch(dataset, loc, batch_size):
     batch_ehr[i,1,config.code_vocab_size:config.code_vocab_size+config.label_vocab_size] = np.array(p['labels']) # Set the patient labels
     batch_ehr[i,len(visits)+1,config.code_vocab_size+config.label_vocab_size+1] = 1 # Set the final visit to have the end token
     batch_ehr[i,len(visits)+2:,config.code_vocab_size+config.label_vocab_size+2] = 1 # Set the rest to the padded visit token
-  
+
   batch_mask[:,1] = 1 # Set the mask to cover the labels
   batch_ehr[:,0,config.code_vocab_size+config.label_vocab_size] = 1 # Set the first visits to be the start token
   batch_mask = batch_mask[:,1:,:] # Shift the mask to match the shifted labels and predictions the model will return
@@ -48,7 +48,7 @@ def conf_mat(x, y):
   return np.array([[totalfalse - falsepos, falsepos], #true negatives, false positives
                    [totaltrue - truepos, truepos]]) #false negatives, true positives
 
-model = ConsequenceModel(config).to(device)
+model = ConSequenceModel(config).to(device)
 checkpoint = torch.load('./save/consequence_model', map_location=torch.device(device))
 model.load_state_dict(checkpoint['model'])
 
@@ -60,40 +60,40 @@ n_pos_codes = 0
 n_total_codes = 0
 model.eval()
 with torch.no_grad():
- for v_i in tqdm(range(0, len(test_ehr_dataset), config.batch_size)):
-   # Get batch inputs
-   batch_ehr, batch_mask = get_batch(test_ehr_dataset, v_i, config.batch_size)
-   batch_ehr = torch.tensor(batch_ehr, dtype=torch.float32).to(device)
-   batch_mask = torch.tensor(batch_mask, dtype=torch.float32).to(device)
-   
-   # Get batch outputs
-   test_loss, predictions, labels = model(batch_ehr, position_ids=None, ehr_labels=batch_ehr, ehr_masks=batch_mask)
-   batch_mask_array = batch_mask.squeeze().cpu().detach().numpy()
-   rounded_preds = np.around(predictions.squeeze().cpu().detach().numpy()).transpose((2,0,1)) 
-   rounded_preds = rounded_preds + batch_mask_array - 1 # Setting the masked visits to be -1 to be ignored by the confusion matrix
-   rounded_preds = rounded_preds.flatten()
-   true_values = labels.squeeze().cpu().detach().numpy().transpose((2,0,1))
-   true_values = true_values + batch_mask_array - 1 # Setting the masked visits to be -1 to be ignored by the confusion matrix
-   true_values = true_values.flatten()
+  for v_i in tqdm(range(0, len(test_ehr_dataset), config.batch_size)):
+    # Get batch inputs
+    batch_ehr, batch_mask = get_batch(test_ehr_dataset, v_i, config.batch_size)
+    batch_ehr = torch.tensor(batch_ehr, dtype=torch.float32).to(device)
+    batch_mask = torch.tensor(batch_mask, dtype=torch.float32).to(device)
 
-   # Append test lost
-   loss_list.append(test_loss.cpu().detach().numpy())
-   
-   # Add number of visits and codes
-   n_visits += torch.sum(batch_mask).cpu().item()
-   n_pos_codes += torch.sum(labels).cpu().item()
-   n_total_codes += (torch.sum(batch_mask) * config.total_vocab_size).cpu().item()
+    # Get batch outputs
+    test_loss, predictions, labels = model(batch_ehr, position_ids=None, ehr_labels=batch_ehr, ehr_masks=batch_mask)
+    batch_mask_array = batch_mask.squeeze().cpu().detach().numpy()
+    rounded_preds = np.around(predictions.squeeze().cpu().detach().numpy()).transpose((2,0,1)) 
+    rounded_preds = rounded_preds + batch_mask_array - 1 # Setting the masked visits to be -1 to be ignored by the confusion matrix
+    rounded_preds = rounded_preds.flatten()
+    true_values = labels.squeeze().cpu().detach().numpy().transpose((2,0,1))
+    true_values = true_values + batch_mask_array - 1 # Setting the masked visits to be -1 to be ignored by the confusion matrix
+    true_values = true_values.flatten()
 
-   # Add confusion matrix
-   batch_cmatrix = conf_mat(true_values == 1, rounded_preds == 1)
-   batch_cmatrix[0][0] = torch.sum(batch_mask) * config.total_vocab_size - batch_cmatrix[0][1] - batch_cmatrix[1][0] - batch_cmatrix[1][1] # Remove the masked values
-   confusion_matrix = batch_cmatrix if confusion_matrix is None else confusion_matrix + batch_cmatrix
+    # Append test lost
+    loss_list.append(test_loss.cpu().detach().numpy())
 
-   # Calculate and add probabilities 
-   # Note that the masked codes will have probability 1 and be ignored
-   label_probs = torch.abs(labels - 1.0 + predictions)
-   log_prob = torch.sum(torch.log(label_probs)).cpu().item()
-   probability_list.append(log_prob)
+    # Add number of visits and codes
+    n_visits += torch.sum(batch_mask).cpu().item()
+    n_pos_codes += torch.sum(labels).cpu().item()
+    n_total_codes += (torch.sum(batch_mask) * config.total_vocab_size).cpu().item()
+
+    # Add confusion matrix
+    batch_cmatrix = conf_mat(true_values == 1, rounded_preds == 1)
+    batch_cmatrix[0][0] = torch.sum(batch_mask) * config.total_vocab_size - batch_cmatrix[0][1] - batch_cmatrix[1][0] - batch_cmatrix[1][1] # Remove the masked values
+    confusion_matrix = batch_cmatrix if confusion_matrix is None else confusion_matrix + batch_cmatrix
+
+    # Calculate and add probabilities 
+    # Note that the masked codes will have probability 1 and be ignored
+    label_probs = torch.abs(labels - 1.0 + predictions)
+    log_prob = torch.sum(torch.log(label_probs)).cpu().item()
+    probability_list.append(log_prob)
 
 # Save intermediate values in case of error
 intermediate = {}
