@@ -57,7 +57,7 @@ class CCNModel(HALOModel):
         # which encodes which body corresponds to which head
         M = self.M.unsqueeze(0)
         R = torch.eye(len(self.Iplus[0])).unsqueeze(0).to(device)
-        R = torch.cat((R,M),dim=2)
+        R_batch = torch.cat((R,M),dim=2)
         # print(R.shape)
         # R_batch = R.expand(len(x),len(self.Iplus[0]), len(self.Iplus[0])+len(v[0]))
 
