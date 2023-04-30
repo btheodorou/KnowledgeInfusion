@@ -67,7 +67,7 @@ with torch.no_grad():
    batch_mask = torch.tensor(batch_mask, dtype=torch.float32).to(device)
    
    # Get batch outputs
-   test_loss, predictions, labels = model(batch_ehr, position_ids=None, ehr_labels=batch_ehr, ehr_masks=batch_mask)
+   _, predictions, labels, test_loss, _ = model(batch_ehr, position_ids=None, ehr_labels=batch_ehr, ehr_masks=batch_mask)
    batch_mask_array = batch_mask.squeeze().cpu().detach().numpy()
    rounded_preds = np.around(predictions.squeeze().cpu().detach().numpy()).transpose((2,0,1)) 
    rounded_preds = rounded_preds + batch_mask_array - 1 # Setting the masked visits to be -1 to be ignored by the confusion matrix

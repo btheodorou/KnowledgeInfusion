@@ -15,7 +15,7 @@ torch.manual_seed(SEED)
 if torch.cuda.is_available():
   torch.cuda.manual_seed_all(SEED)
 
-config = HALOConfig(rules=pickle.load(open('inpatient_data/rules2.pkl', 'rb')))
+config = HALOConfig()
 NUM_GENERATIONS = 100000
 
 device = torch.device("cuda:7" if torch.cuda.is_available() else "cpu")

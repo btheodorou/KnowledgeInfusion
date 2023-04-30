@@ -65,7 +65,7 @@ for e in tqdm(range(config.epoch)):
     loss.backward()
     optimizer.step()
     
-    if i % (80000*config.ccn_batch_size) == 0:
+    if i % (40000*config.ccn_batch_size) == 0:
       print("Epoch %d, Iter %d: Training Loss:%.6f"%(e, i, loss))
     
   model.eval()

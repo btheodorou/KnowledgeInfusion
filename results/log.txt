@@ -33,7 +33,21 @@ ConSequence:
   Violations: 0
 
 Loss-Based:
-  
+  Training Speed: 2:05:43 for 62 epochs
+  Validation Loss: 0.0007862
+  Average Test Loss:  0.00076741236
+  Confusion Matrix:  [[16975761    11355]
+                      [   69515    23819]]
+  Accuracy:  0.9952653472244584
+  Precision:  0.6771763234207084
+  Recall:  0.25520174855893885
+  F1 Score:  0.3707006567684502
+  Test Log Probability:  -255798.90966796875
+  Perplexity Per Visit:  33888519922.401184
+  Perplexity Per Positive Code:  15.497566742980629
+  Perplexity Per Possible Code:  1.0150888264307387
+  Generation Seconds Per Patient: 
+  Violations: 
 
 CCN:
   

@@ -25,7 +25,7 @@ class LossModel(HALOModel):
             classification_loss = bce(code_probs, shift_labels)
             semantic_loss = 0
             for (past_visits, past_codes, past_non_codes, current_codes, current_non_codes, output_code, output_value) in self.rules:
-                pv = past_visits[0] if len(past_visits) > 0 else -1
+                pv = past_visits[0]-1 if len(past_visits) > 0 else -1
                 pos_prob = code_probs[:,:,output_code] if output_value == 1 else 1 - code_probs[:,:,output_code]
                 neg_prob = 1-pos_prob
                 prob_list = torch.zeros(code_probs.size(0),code_probs.size(1),len(past_codes)+len(past_non_codes)+len(current_codes)+len(current_non_codes), dtype=torch.float32, device=code_probs.device)
@@ -33,12 +33,13 @@ class LossModel(HALOModel):
                 
                 if pv >= 0:
                     for c in past_codes:
-
                         prob_list[:,:,currCounter] = code_probs[:,pv,c].unsqueeze(1).repeat(1,prob_list.size(1))
+                        prob_list[:,:pv+1,currCounter] = 0
                         currCounter += 1
                     
                     for c in past_non_codes:
                         prob_list[:,:,currCounter] = 1 - code_probs[:,pv,c].unsqueeze(1).repeat(1,prob_list.size(1))
+                        prob_list[:,:pv+1,currCounter] = 0
                         currCounter += 1
                 else:
                     for c in past_codes:
@@ -57,14 +58,16 @@ class LossModel(HALOModel):
                     prob_list[:,:,currCounter] = 1 - code_probs[:,:,c]
                     currCounter += 1
 
+                # X -> Y: valid if X and Y, not X and Y, not X and not Y
+                # X -> Y: broken if X and not Y (satis_prob * neg_prob)
                 satis_prob = prob_list.prod(dim=-1)
-                nonsatis_prob = 1-satis_prob
-                rule_prob = -torch.log((satis_prob*pos_prob) + (nonsatis_prob*neg_prob))   
-                semantic_loss += rule_prob.mean()
+                rule_prob = 1 - satis_prob*neg_prob
+                rule_loss = -torch.clamp(torch.log(rule_prob), min=-100)
+                semantic_loss += rule_loss.mean()
                 
             semantic_loss = semantic_loss/len(self.rules)
-            loss = classification_loss + self.w * semantic_loss
-            return loss, code_probs, shift_labels
+            loss = classification_loss + (self.w * semantic_loss)
+            return loss, code_probs, shift_labels, classification_loss, semantic_loss
         
         return code_probs
 

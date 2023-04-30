@@ -13,6 +13,8 @@ np.random.seed(SEED)
 torch.manual_seed(SEED)
 if torch.cuda.is_available():
   torch.cuda.manual_seed_all(SEED)
+  
+  CUDA_LAUNCH_BLOCKING=1
 
 config = HALOConfig()
 device = torch.device("cuda:7" if torch.cuda.is_available() else "cpu")
@@ -61,7 +63,7 @@ for e in tqdm(range(config.epoch)):
     batch_mask = torch.tensor(batch_mask, dtype=torch.float32).to(device)
     
     optimizer.zero_grad()
-    loss, _, _ = model(batch_ehr, position_ids=None, ehr_labels=batch_ehr, ehr_masks=batch_mask)
+    loss, _, _, _, _ = model(batch_ehr, position_ids=None, ehr_labels=batch_ehr, ehr_masks=batch_mask)
     loss.backward()
     optimizer.step()
     
@@ -71,16 +73,22 @@ for e in tqdm(range(config.epoch)):
   model.eval()
   with torch.no_grad():
     val_l = []
+    val_c = []
+    val_s = []
     for v_i in range(0, len(val_ehr_dataset), config.batch_size):
       batch_ehr, batch_mask = get_batch(val_ehr_dataset, v_i, config.batch_size)
       batch_ehr = torch.tensor(batch_ehr, dtype=torch.float32).to(device)
       batch_mask = torch.tensor(batch_mask, dtype=torch.float32).to(device)
 
-      val_loss, _, _ = model(batch_ehr, position_ids=None, ehr_labels=batch_ehr, ehr_masks=batch_mask)
+      val_loss, _, _, c_loss, s_loss = model(batch_ehr, position_ids=None, ehr_labels=batch_ehr, ehr_masks=batch_mask)
       val_l.append((val_loss).cpu().detach().numpy())
+      val_c.append((c_loss).cpu().detach().numpy())
+      val_s.append((s_loss).cpu().detach().numpy())
       
     cur_val_loss = np.mean(val_l)
-    print("Epoch %d Validation Loss:%.7f"%(e, cur_val_loss))
+    cur_c_loss = np.mean(val_c)
+    cur_s_loss = np.mean(val_s)
+    print("Epoch %d Validation Loss:%.7f  Classification Loss:%.5f  Semantic Loss:%.5f"%(e, cur_val_loss, cur_c_loss, cur_s_loss))
     if cur_val_loss < global_loss:
       global_loss = cur_val_loss
       state = {
