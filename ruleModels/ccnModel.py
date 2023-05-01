@@ -32,10 +32,7 @@ class CCNModel(HALOModel):
     # Get the vector containing the value of each body having more than one literal
     def get_v(self, out):
         H = out.unsqueeze(1)
-        # H = out.expand(len(out), len(self.Iplus), len(self.Iplus[0]))
         Iplus, Iminus = self.Iplus.unsqueeze(0), self.Iminus.unsqueeze(0)
-        # Iplus = Iplus.expand(len(out),len(Iplus[0]),len(Iplus[0][0]))
-        # Iminus = Iminus.expand(len(out),len(Iplus[0]),len(Iplus[0][0]))
         v, _ = torch.min((((Iplus*H)+(Iminus*(1-H)))+(1-Iplus-Iminus))*(1-Iplus*Iminus)+torch.min((Iplus*H),Iminus*(1-H))*Iplus*Iminus,dim=2)
         return v
 
@@ -50,16 +47,12 @@ class CCNModel(HALOModel):
         # and then expand it to a tensor [batch_size, num_classes, num_rules] <-- num rules stnads for the number of rules having len(body) > 1
         V = torch.cat((c_out,v), dim=1)
         V = V.unsqueeze(1)
-        # print(V.shape)
-        # V = V.expand(len(x),len(self.Iplus[0]), len(self.Iplus[0])+len(v[0]))
         
         # Concatenate the matrix encoding the hierarchy (i.e., one literal rules) with the matrix M
         # which encodes which body corresponds to which head
         M = self.M.unsqueeze(0)
         R = torch.eye(len(self.Iplus[0])).unsqueeze(0).to(device)
         R_batch = torch.cat((R,M),dim=2)
-        # print(R.shape)
-        # R_batch = R.expand(len(x),len(self.Iplus[0]), len(self.Iplus[0])+len(v[0]))
 
         #Compute the final output
         final_out, _ = torch.max(R_batch*V, dim = 2)
@@ -70,14 +63,10 @@ class CCNModel(HALOModel):
     def get_v_train(self, out, y, label_polarity):
         # H has shape (batch_size, num_rules, num_classes) <-- num rules stands for the number of rules having len(body) > 1
         H = out.unsqueeze(1)
-        # H = out.expand(len(out),len(self.Iplus),len(self.Iplus[0]))
 
         Y = y.unsqueeze(1)
-        # Y = y.expand(len(y),len(self.Iplus),len(self.Iplus[0]))
 
         Iplus, Iminus = self.Iplus.unsqueeze(0), self.Iminus.unsqueeze(0)
-        # Iplus = Iplus.expand(len(out),len(Iplus[0]),len(Iplus[0][0]))
-        # Iminus = Iminus.expand(len(out),len(Iplus[0]),len(Iplus[0][0]))
         
         if label_polarity=='positive':
             vplus, _ = torch.min(Iplus*H*Y+(1-Iplus),dim=2)
@@ -104,14 +93,12 @@ class CCNModel(HALOModel):
         # and then expand it to a tensor [batch_size, num_classes, num_rules]
         V = torch.cat((x,v), dim=1)
         V = V.unsqueeze(1)
-        # V = V.expand(len(x),len(self.Iplus[0]), len(self.Iplus[0])+len(v[0]))
         
         # Concatenate the matrix encoding the hierarchy (i.e., one literal rules) with the matrix M
         # which encodes which body corresponds to which head
         M = self.M.unsqueeze(0) 
         R = torch.eye(len(self.Iplus[0])).unsqueeze(0).to(device)
         R = torch.cat((R,M),dim=2)
-        # R = R.expand(len(x),len(self.Iplus[0]), len(self.Iplus[0])+len(v[0]))
         # Compute the final output
         final_out, _ = torch.max(R*V, dim = 2)
         

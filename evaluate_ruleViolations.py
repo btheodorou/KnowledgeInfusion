@@ -9,7 +9,8 @@ from sklearn.metrics import r2_score
 config = HALOConfig()
 base_ehr_dataset = pickle.load(open('./results/baseDataset.pkl', 'rb'))
 consequence_ehr_dataset = pickle.load(open('./results/conSequenceDataset.pkl', 'rb'))
-# ccn_ehr_dataset = pickle.load(open('./results/ccnDataset.pkl', 'rb'))
+loss_ehr_dataset = pickle.load(open('./results/lossBaselineDataset.pkl', 'rb'))
+ccn_ehr_dataset = pickle.load(open('./results/ccnDataset.pkl', 'rb'))
 
 def evaluateDataset(dataset, rules):
   violationsPerRule = []
@@ -45,15 +46,21 @@ def evaluateDataset(dataset, rules):
   
 
 # Extract and save statistics
-base_violations = evaluateDataset(base_ehr_dataset, config.rules)
-consequence_violations = evaluateDataset(consequence_ehr_dataset, config.rules)
-# ccn_violations = evaluateDataset(ccn_ehr_dataset, config.rules)
-pickle.dump(base_violations, open('results/violation_stats/Base_Violation_Stats.pkl', 'wb'))
-pickle.dump(consequence_violations, open('results/violation_stats/ConSequence_Violation_Stats.pkl', 'wb'))
-# pickle.dump(ccn_violations, open('results/violation_stats/CCN_Violation_Stats.pkl', 'wb'))
-print(base_violations["Total Number"])
-print(base_violations["Per Rule"])
-print(consequence_violations["Total Number"])
-print(consequence_violations["Per Rule"])
-# print(ccn_violations["Total Number"])
-# print(ccn_violations["Per Rule"])
+# base_violations = evaluateDataset(base_ehr_dataset, config.rules)
+# consequence_violations = evaluateDataset(consequence_ehr_dataset, config.rules)
+# loss_violations = evaluateDataset(loss_ehr_dataset, config.rules)
+ccn_violations = evaluateDataset(ccn_ehr_dataset, config.rules)
+# pickle.dump(base_violations, open('results/violation_stats/Base_Violation_Stats.pkl', 'wb'))
+# pickle.dump(consequence_violations, open('results/violation_stats/ConSequence_Violation_Stats.pkl', 'wb'))
+# pickle.dump(loss_violations, open('results/violation_stats/Loss_Violation_Stats.pkl', 'wb'))
+pickle.dump(ccn_violations, open('results/violation_stats/CCN_Violation_Stats.pkl', 'wb'))
+# print(base_violations["Total Number"])
+# print(base_violations["Per Rule"])
+# print(consequence_violations["Total Number"])
+# print(consequence_violations["Per Rule"])
+# print(loss_violations["Total Number"])
+# print(loss_violations["Per Rule"])
+print(ccn_violations["Total Number"])
+print(ccn_violations["Per Rule"])
+
+# LAST 11

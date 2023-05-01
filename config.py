@@ -18,7 +18,7 @@ class HALOConfig(object):
             batch_size=256,
             ccn_batch_size=32,
             sample_batch_size=1024,
-            ccn_sample_batch_size=128,
+            ccn_sample_batch_size=32,
             epoch=500,
             lr=1e-4,
             rules = pickle.load(open('inpatient_data/rules.pkl', 'rb'))

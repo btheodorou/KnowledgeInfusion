@@ -55,7 +55,7 @@ global_loss = 1e10
 for e in tqdm(range(config.epoch)):
   shuffle_training_data(train_ehr_dataset)
   model.train()
-  for i in range(0, len(train_ehr_dataset), config.ccn_batch_size):    
+  for i in range(0, len(train_ehr_dataset), config.ccn_batch_size):        
     batch_ehr, batch_mask = get_batch(train_ehr_dataset, i, config.ccn_batch_size)
     batch_ehr = torch.tensor(batch_ehr, dtype=torch.float32).to(device)
     batch_mask = torch.tensor(batch_mask, dtype=torch.float32).to(device)

@@ -46,8 +46,22 @@ Loss-Based:
   Perplexity Per Visit:  33888519922.401184
   Perplexity Per Positive Code:  15.497566742980629
   Perplexity Per Possible Code:  1.0150888264307387
-  Generation Seconds Per Patient: 
-  Violations: 
+  Generation Seconds Per Patient: 0.02184145945549011
+  Violations: 52476
 
 CCN:
-  
+  Training Speed: 4:55:49 for 33 epochs
+  Validation Loss: 0.0007389
+  Average Test Loss:  0.00072787394
+  Confusion Matrix:  [[16973897    13219]
+                      [   64053    29281]]
+  Accuracy:  0.9954759974122461
+  Precision:  0.6889647058823529
+  Recall:  0.3137227591231491
+  F1 Score:  0.43112917237216014
+  Test Log Probability:  -241255.5838623047
+  Perplexity Per Visit:  8538300790.198916
+  Perplexity Per Positive Code:  13.26146939023965
+  Perplexity Per Possible Code:  1.0142248864085295
+  Generation Seconds Per Patient: 0.019456084694862364
+  Violations: 52476

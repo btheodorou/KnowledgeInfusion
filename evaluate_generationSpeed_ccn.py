@@ -5,7 +5,7 @@ import random
 import numpy as np
 from tqdm import tqdm
 from sklearn import metrics
-from ruleModels.cccModel import CCNModel
+from ruleModels.ccnModel import CCNModel
 from config import HALOConfig
 
 SEED = 4
@@ -18,7 +18,7 @@ if torch.cuda.is_available():
 config = HALOConfig()
 NUM_GENERATIONS = 100000
 
-device = torch.device("cuda:4" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:5" if torch.cuda.is_available() else "cpu")
 
 def sample_sequence(model, length, context, batch_size, device='cuda', sample=True):
   empty = torch.zeros((1,1,config.total_vocab_size), device=device, dtype=torch.float32).repeat(batch_size, 1, 1)
@@ -76,8 +76,8 @@ count = 0
 stoken = np.zeros(config.total_vocab_size)
 stoken[config.code_vocab_size+config.label_vocab_size] = 1
 start = time()
-for i in tqdm(range(0, NUM_GENERATIONS, 4*config.ccn_batch_size)):
-  bs = min([NUM_GENERATIONS-i, 4*config.ccn_batch_size])
+for i in tqdm(range(0, NUM_GENERATIONS, config.ccn_sample_batch_size)):
+  bs = min([NUM_GENERATIONS-i, config.ccn_sample_batch_size])
   batch_synthetic_ehrs = sample_sequence(model, config.n_ctx, stoken, batch_size=bs, device=device, sample=True)
   batch_synthetic_ehrs = convert_ehr(batch_synthetic_ehrs)
   synthetic_ehr_dataset += batch_synthetic_ehrs
