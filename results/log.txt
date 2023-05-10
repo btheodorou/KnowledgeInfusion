@@ -14,6 +14,37 @@ Base Model:
   Perplexity Per Possible Code:  1.0149957641677683  
   Generation Seconds Per Patient: 0.0172816880941391
   Violations: 64999
+  Percent Validity: 0.59045
+  Per Record Code Probabilities: 0.9801017812492104
+  Per Visit Code Probabilities: 0.9824223481555308
+  Per Record Bigram Probabilities: 0.9501830890858093
+  Per Visit Bigram Probabilities: 0.949392221831326
+  Per Record Sequential Visit Bigram Probabilities: 0.9486201168632666
+  Per Visit Sequential Visit Bigram Probabilities: 0.9388114713003226
+
+Post Processed Model:
+  Training Speed: 1:47:22 for 67 epochs
+  Validation Loss: 0.0007775
+  Average Test Loss:  0.00076261937
+  Confusion Matrix:  [[16975125    11991]
+                      [   67532    25802]]
+  Accuracy:  0.9953442093153283
+  Precision:  0.6827190220411187
+  Recall:  0.27644802537124735
+  F1 Score:  0.39354213853744846
+  Test Log Probability:  -254232.92041015625
+  Perplexity Per Visit:  29213803229.97244
+  Perplexity Per Positive Code:  15.23971258440418   
+  Perplexity Per Possible Code:  1.0149957641677683  
+  Generation Seconds Per Patient: 0.028627565877437592
+  Violations: 0
+  Percent Validity: 1.0
+  Per Record Code Probabilities: 0.9790592611765446
+  Per Visit Code Probabilities: 0.9812257612395014
+  Per Record Bigram Probabilities: 0.9476858807126938
+  Per Visit Bigram Probabilities: 0.9465938648093827
+  Per Record Sequential Visit Bigram Probabilities: 0.9465724392982515
+  Per Visit Sequential Visit Bigram Probabilities: 0.9360423492281348
 
 ConSequence:
   Training Speed: 1:54:53 for 64 epochs
@@ -31,6 +62,13 @@ ConSequence:
   Perplexity Per Possible Code:  1.0146584351252748
   Generation Seconds Per Patient: 0.01808318507194519
   Violations: 0
+  Percent Validity: 1.0
+  Per Record Code Probabilities: 0.983464197774954
+  Per Visit Code Probabilities: 0.9848261885344602
+  Per Record Bigram Probabilities: 0.9459337556614208
+  Per Visit Bigram Probabilities: 0.9491352613203938
+  Per Record Sequential Visit Bigram Probabilities: 0.8154184913246548
+  Per Visit Sequential Visit Bigram Probabilities: 0.9582341802204751
 
 Loss-Based:
   Training Speed: 2:05:43 for 62 epochs
@@ -48,6 +86,13 @@ Loss-Based:
   Perplexity Per Possible Code:  1.0150888264307387
   Generation Seconds Per Patient: 0.02184145945549011
   Violations: 52476
+  Percent Validity: 0.64674
+  Per Record Code Probabilities: 0.9560638723154111
+  Per Visit Code Probabilities: 0.9666869412904954
+  Per Record Bigram Probabilities: 0.9318732655017449
+  Per Visit Bigram Probabilities: 0.9341820046411518
+  Per Record Sequential Visit Bigram Probabilities: 0.9433823863773636
+  Per Visit Sequential Visit Bigram Probabilities: 0.945712774662825
 
 CCN:
   Training Speed: 4:55:49 for 33 epochs
@@ -65,3 +110,10 @@ CCN:
   Perplexity Per Possible Code:  1.0142248864085295
   Generation Seconds Per Patient: 0.019456084694862364
   Violations: 52476
+  Percent Validity: 0.70191
+  Per Record Code Probabilities: 0.9923104239002003
+  Per Visit Code Probabilities: 0.9940423232671637
+  Per Record Bigram Probabilities: 0.9846753448974211
+  Per Visit Bigram Probabilities: 0.9853831177487341
+  Per Record Sequential Visit Bigram Probabilities: 0.9683799659287358
+  Per Visit Sequential Visit Bigram Probabilities: 0.9682238010240121

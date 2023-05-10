@@ -89,4 +89,4 @@ for cs in pairCounts:
         rules.append(([], [], [], [cs[1]], [], cs[0], 1))
 print('RULE LENGTH: ', len(rules))
 
-pickle.dump(rules, open('./inpatient_data/rules.pkl', 'wb'))
+# pickle.dump(rules, open('./inpatient_data/rules.pkl', 'wb'))
