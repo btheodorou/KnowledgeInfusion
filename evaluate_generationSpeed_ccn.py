@@ -8,7 +8,8 @@ from sklearn import metrics
 from ruleModels.ccnModel import CCNModel
 from config import HALOConfig
 
-SEED = 4
+RUN = 0
+SEED = RUN
 random.seed(SEED)
 np.random.seed(SEED)
 torch.manual_seed(SEED)
@@ -18,7 +19,7 @@ if torch.cuda.is_available():
 config = HALOConfig()
 NUM_GENERATIONS = 100000
 
-device = torch.device("cuda:5" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:7" if torch.cuda.is_available() else "cpu")
 
 def sample_sequence(model, length, context, batch_size, device='cuda', sample=True):
   empty = torch.zeros((1,1,config.total_vocab_size), device=device, dtype=torch.float32).repeat(batch_size, 1, 1)
@@ -71,20 +72,29 @@ checkpoint = torch.load('./save/ccn_model', map_location=torch.device(device))
 model.load_state_dict(checkpoint['model'])
 
 # Generate Synthetic EHR dataset
-synthetic_ehr_dataset = []
-count = 0
+speeds = []
 stoken = np.zeros(config.total_vocab_size)
 stoken[config.code_vocab_size+config.label_vocab_size] = 1
-start = time()
-for i in tqdm(range(0, NUM_GENERATIONS, config.ccn_sample_batch_size)):
-  bs = min([NUM_GENERATIONS-i, config.ccn_sample_batch_size])
-  batch_synthetic_ehrs = sample_sequence(model, config.n_ctx, stoken, batch_size=bs, device=device, sample=True)
-  batch_synthetic_ehrs = convert_ehr(batch_synthetic_ehrs)
-  synthetic_ehr_dataset += batch_synthetic_ehrs
-end = time()
+for run in tqdm(range(RUNS)):
+  SEED = run
+  random.seed(SEED)
+  np.random.seed(SEED)
+  torch.manual_seed(SEED)
+  if torch.cuda.is_available():
+    torch.cuda.manual_seed_all(SEED)
+    
+  synthetic_ehr_dataset = []
+  start = time()
+  for i in tqdm(range(0, NUM_GENERATIONS, config.ccn_sample_batch_size), leave=False):
+    bs = min([NUM_GENERATIONS-i, config.ccn_sample_batch_size])
+    batch_synthetic_ehrs = sample_sequence(model, config.n_ctx, stoken, batch_size=bs, device=device, sample=True)
+    batch_synthetic_ehrs = convert_ehr(batch_synthetic_ehrs)
+    synthetic_ehr_dataset += batch_synthetic_ehrs
+  end = time()
 
-generationTime = end - start
-secondsPerPatient = generationTime / NUM_GENERATIONS
-print(f"Seconds Per Patient: {secondsPerPatient}")
-pickle.dump(secondsPerPatient, open('./results/generationSpeeds/ccnSpeed.pkl', 'wb'))
-pickle.dump(synthetic_ehr_dataset, open(f'./results/ccnDataset.pkl', 'wb'))
+  generationTime = end - start
+  secondsPerPatient = generationTime / NUM_GENERATIONS
+  speeds.append(secondsPerPatient)
+  pickle.dump(secondsPerPatient, open(f'./results/generationSpeeds/ccnSpeed_{run}.pkl', 'wb'))
+  pickle.dump(synthetic_ehr_dataset, open(f'./results/ccnDataset_{run}.pkl', 'wb'))
+print(f"Seconds Per Patient: {np.mean(speeds)} +/- {np.std(speeds) / np.sqrt(RUNS) * 1.96}")
