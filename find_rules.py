@@ -20,6 +20,7 @@ for l in range(config.label_vocab_size):
     for c in missingCommon:
         rules.append(([1], [config.code_vocab_size + l], [], [], [], c, 0))
 print('RULE LENGTH: ', len(rules))
+num_label_rules = len(rules)
 
 multiVisit = [p for p in data if len(p['visits']) > 1]
 condCounts = {}
@@ -82,11 +83,26 @@ for p in data:
                 pairCounts[cs] = 1
             else:
                 pairCounts[cs] += 1
+pairRules = []
 for cs in pairCounts:
     if pairCounts[cs] == overallPrevalences[cs[0]] and overallPrevalences[cs[0]] >= 10:
-        rules.append(([], [], [], [cs[0]], [], cs[1], 1))
+        pairRules.append(([], [], [], [cs[0]], [], cs[1], 1))
     elif pairCounts[cs] == overallPrevalences[cs[1]] and overallPrevalences[cs[1]] >= 10:
-        rules.append(([], [], [], [cs[1]], [], cs[0], 1))
+        pairRules.append(([], [], [], [cs[1]], [], cs[0], 1))
+
+rules += pairRules
+pairConds = set([r[3][0] for r in pairRules])
 print('RULE LENGTH: ', len(rules))
 
-# pickle.dump(rules, open('./inpatient_data/rules.pkl', 'wb'))
+bonus_rules = []
+for l in range(config.label_vocab_size):
+    subPop = [p for p in data if p['labels'][l] == 1]
+    subCodes = [c for p in subPop for v in p['visits'] for c in set(v)]
+    missingCodes = [c for c in overallPrevalences if c not in subCodes]
+    missingPairCond = [c for c in missingCodes if c in pairConds and overallPrevalences[c] < 500]
+    for c in missingPairCond:
+        bonus_rules.append(([1], [config.code_vocab_size + l], [], [], [], c, 0))
+        
+rules = rules[:num_label_rules] + bonus_rules + rules[num_label_rules:]
+print('RULE LENGTH: ', len(rules))
+pickle.dump(rules, open('./inpatient_data/rules.pkl', 'wb'))

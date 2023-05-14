@@ -12,7 +12,7 @@ RUNS = 25
 
 config = HALOConfig()
 NUM_GENERATIONS = 10000
-device = torch.device("cuda:7" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:6" if torch.cuda.is_available() else "cpu")
 
 def sample_sequence(model, length, context, batch_size, device='cuda', sample=True):
   empty = torch.zeros((1,1,config.total_vocab_size), device=device, dtype=torch.float32).repeat(batch_size, 1, 1)

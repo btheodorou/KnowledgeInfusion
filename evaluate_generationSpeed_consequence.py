@@ -4,20 +4,12 @@ import pickle
 import random
 import numpy as np
 from tqdm import tqdm
-from sklearn import metrics
 from ruleModels.consequenceModel import ConSequenceModel
 from config import HALOConfig
 
-RUN = 1
-SEED = RUN
-random.seed(SEED)
-np.random.seed(SEED)
-torch.manual_seed(SEED)
-if torch.cuda.is_available():
-  torch.cuda.manual_seed_all(SEED)
-
+RUNS = 10
 config = HALOConfig()
-NUM_GENERATIONS = 100000
+NUM_GENERATIONS = 10000
 
 device = torch.device("cuda:7" if torch.cuda.is_available() else "cpu")
 
@@ -86,8 +78,8 @@ for run in tqdm(range(RUNS)):
     
   synthetic_ehr_dataset = []
   start = time()
-  for i in tqdm(range(0, NUM_GENERATIONS, config.sample_batch_size), leave=False):
-    bs = min([NUM_GENERATIONS-i, config.sample_batch_size])
+  for i in tqdm(range(0, NUM_GENERATIONS, 1024), leave=False):
+    bs = min([NUM_GENERATIONS-i, 1024])
     batch_synthetic_ehrs = sample_sequence(model, config.n_ctx, stoken, batch_size=bs, device=device, sample=True)
     batch_synthetic_ehrs = convert_ehr(batch_synthetic_ehrs)
     synthetic_ehr_dataset += batch_synthetic_ehrs
@@ -99,22 +91,3 @@ for run in tqdm(range(RUNS)):
   pickle.dump(secondsPerPatient, open(f'./results/generationSpeeds/conSequenceSpeed_{run}.pkl', 'wb'))
   pickle.dump(synthetic_ehr_dataset, open(f'./results/conSequenceDataset_{run}.pkl', 'wb'))
 print(f"Seconds Per Patient: {np.mean(speeds)} +/- {np.std(speeds) / np.sqrt(RUNS) * 1.96}")
-
-# Generate Synthetic EHR dataset
-synthetic_ehr_dataset = []
-count = 0
-stoken = np.zeros(config.total_vocab_size)
-stoken[config.code_vocab_size+config.label_vocab_size] = 1
-start = time()
-for i in tqdm(range(0, NUM_GENERATIONS, config.sample_batch_size)):
-  bs = min([NUM_GENERATIONS-i, config.sample_batch_size])
-  batch_synthetic_ehrs = sample_sequence(model, config.n_ctx, stoken, batch_size=bs, device=device, sample=True)
-  batch_synthetic_ehrs = convert_ehr(batch_synthetic_ehrs)
-  synthetic_ehr_dataset += batch_synthetic_ehrs
-end = time()
-
-generationTime = end - start
-secondsPerPatient = generationTime / NUM_GENERATIONS
-print(f"Seconds Per Patient: {secondsPerPatient}")
-pickle.dump(secondsPerPatient, open(f'./results/generationSpeeds/conSequenceSpeed_{RUN}.pkl', 'wb'))
-pickle.dump(synthetic_ehr_dataset, open(f'./results/conSequenceDataset_{RUN}.pkl', 'wb'))

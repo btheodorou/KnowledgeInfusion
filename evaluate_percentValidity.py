@@ -48,19 +48,19 @@ def evaluateDataset(dataset, rules):
   
 
 # Extract and save statistics
-for i in range(RUNS):
+for i in tqdm(range(RUNS)):
   base_ehr_dataset = pickle.load(open(f'./results/baseDataset_{i}.pkl', 'rb'))
-  processed_ehr_dataset = pickle.load(open(f'./results/postProcessedDataset_{i}.pkl', 'rb'))
-  consequence_ehr_dataset = pickle.load(open(f'./results/conSequenceDataset_{i}.pkl', 'rb'))
-  loss_ehr_dataset = pickle.load(open(f'./results/lossBaselineDataset_{i}.pkl', 'rb'))
-  ccn_ehr_dataset = pickle.load(open(f'./results/ccnDataset_{i}.pkl', 'rb'))
+  # processed_ehr_dataset = pickle.load(open(f'./results/postProcessedDataset_{i}.pkl', 'rb'))
+  # consequence_ehr_dataset = pickle.load(open(f'./results/conSequenceDataset_{i}.pkl', 'rb'))
+  # loss_ehr_dataset = pickle.load(open(f'./results/lossBaselineDataset_{i}.pkl', 'rb'))
+  # ccn_ehr_dataset = pickle.load(open(f'./results/ccnDataset_{i}.pkl', 'rb'))
   base_validity = evaluateDataset(base_ehr_dataset, config.rules)
-  processed_validity = evaluateDataset(processed_ehr_dataset, config.rules)
-  consequence_validity = evaluateDataset(consequence_ehr_dataset, config.rules)
-  loss_validity = evaluateDataset(loss_ehr_dataset, config.rules)
-  ccn_validity = evaluateDataset(ccn_ehr_dataset, config.rules)
+  # processed_validity = evaluateDataset(processed_ehr_dataset, config.rules)
+  # consequence_validity = evaluateDataset(consequence_ehr_dataset, config.rules)
+  # loss_validity = evaluateDataset(loss_ehr_dataset, config.rules)
+  # ccn_validity = evaluateDataset(ccn_ehr_dataset, config.rules)
   pickle.dump(base_validity, open(f'results/violation_stats/Base_Validity_Stats_{i}.pkl', 'wb'))
-  pickle.dump(processed_validity, open(f'results/violation_stats/Base_Validity_Stats_{i}.pkl', 'wb'))
-  pickle.dump(consequence_validity, open(f'results/violation_stats/ConSequence_Validity_Stats_{i}.pkl', 'wb'))
-  pickle.dump(loss_validity, open(f'results/violation_stats/Loss_Validity_Stats_{i}.pkl', 'wb'))
-  pickle.dump(ccn_validity, open(f'results/violation_stats/CCN_Validity_Stats_{i}.pkl', 'wb'))
+  # pickle.dump(processed_validity, open(f'results/violation_stats/Processed_Validity_Stats_{i}.pkl', 'wb'))
+  # pickle.dump(consequence_validity, open(f'results/violation_stats/ConSequence_Validity_Stats_{i}.pkl', 'wb'))
+  # pickle.dump(loss_validity, open(f'results/violation_stats/Loss_Validity_Stats_{i}.pkl', 'wb'))
+  # pickle.dump(ccn_validity, open(f'results/violation_stats/CCN_Validity_Stats_{i}.pkl', 'wb'))

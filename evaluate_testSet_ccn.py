@@ -15,7 +15,7 @@ if torch.cuda.is_available():
   torch.cuda.manual_seed_all(SEED)
 
 config = HALOConfig()
-device = torch.device("cuda:6" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:7" if torch.cuda.is_available() else "cpu")
 
 train_ehr_dataset = pickle.load(open('./inpatient_data/trainDataset.pkl', 'rb'))
 test_ehr_dataset = pickle.load(open('./inpatient_data/testDataset.pkl', 'rb'))
@@ -60,9 +60,9 @@ n_pos_codes = 0
 n_total_codes = 0
 model.eval()
 with torch.no_grad():
- for v_i in tqdm(range(0, len(test_ehr_dataset), config.ccn_batch_size)):
+ for v_i in tqdm(range(0, len(test_ehr_dataset), config.batch_size)):
    # Get batch inputs
-   batch_ehr, batch_mask = get_batch(test_ehr_dataset, v_i, config.ccn_batch_size)
+   batch_ehr, batch_mask = get_batch(test_ehr_dataset, v_i, config.batch_size)
    batch_ehr = torch.tensor(batch_ehr, dtype=torch.float32).to(device)
    batch_mask = torch.tensor(batch_mask, dtype=torch.float32).to(device)
    

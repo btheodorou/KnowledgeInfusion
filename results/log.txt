@@ -1,17 +1,17 @@
 Base Model:
-  Training Speed: 1:47:22 for 67 epochs
-  Validation Loss: 0.0007775
-  Average Test Loss:  0.00076261937
-  Confusion Matrix:  [[16975125    11991]
-                      [   67532    25802]]
-  Accuracy:  0.9953442093153283
-  Precision:  0.6827190220411187
-  Recall:  0.27644802537124735
-  F1 Score:  0.39354213853744846
-  Test Log Probability:  -254232.92041015625
-  Perplexity Per Visit:  29213803229.97244
-  Perplexity Per Positive Code:  15.23971258440418   
-  Perplexity Per Possible Code:  1.0149957641677683  
+  Training Speed: 1:20:41 for 42 epochs
+  Validation Loss: 0.0007412
+  Average Test Loss:  0.0007258587
+  Confusion Matrix:  [[16974081    13035]
+                      [   62117    31217]]
+  Accuracy:  0.9956001159220044
+  Precision:  0.7054370423935641
+  Recall:  0.33446546810379923
+  F1 Score:  0.45378163475935046
+  Test Log Probability:  -240576.9344482422
+  Perplexity Per Visit:  8006350654.876736
+  Perplexity Per Positive Code:  13.165392423279146
+  Perplexity Per Possible Code:  1.014184589492988
   Generation Seconds Per Patient: 0.0172816880941391
   Violations: 64999
   Percent Validity: 0.59045
@@ -23,19 +23,19 @@ Base Model:
   Per Visit Sequential Visit Bigram Probabilities: 0.9388114713003226
 
 Post Processed Model:
-  Training Speed: 1:47:22 for 67 epochs
-  Validation Loss: 0.0007775
-  Average Test Loss:  0.00076261937
-  Confusion Matrix:  [[16975125    11991]
-                      [   67532    25802]]
-  Accuracy:  0.9953442093153283
-  Precision:  0.6827190220411187
-  Recall:  0.27644802537124735
-  F1 Score:  0.39354213853744846
-  Test Log Probability:  -254232.92041015625
-  Perplexity Per Visit:  29213803229.97244
-  Perplexity Per Positive Code:  15.23971258440418   
-  Perplexity Per Possible Code:  1.0149957641677683  
+  Training Speed: 1:20:41 for 42 epochs
+  Validation Loss: 0.0007412
+  Average Test Loss:  0.0007258587
+  Confusion Matrix:  [[16974081    13035]
+                      [   62117    31217]]
+  Accuracy:  0.9956001159220044
+  Precision:  0.7054370423935641
+  Recall:  0.33446546810379923
+  F1 Score:  0.45378163475935046
+  Test Log Probability:  -240576.9344482422
+  Perplexity Per Visit:  8006350654.876736
+  Perplexity Per Positive Code:  13.165392423279146
+  Perplexity Per Possible Code:  1.014184589492988
   Generation Seconds Per Patient: 0.028627565877437592
   Violations: 0
   Percent Validity: 1.0
@@ -47,19 +47,19 @@ Post Processed Model:
   Per Visit Sequential Visit Bigram Probabilities: 0.9360423492281348
 
 ConSequence:
-  Training Speed: 1:54:53 for 64 epochs
-  Validation Loss: 0.0007597
-  Average Test Loss:  0.00074550987
-  Confusion Matrix:  [[16977118     9998]
-                      [   67291    26043]]
-  Accuracy:  0.9954750021223094
-  Precision:  0.7225937127160733
-  Recall:  0.2790301497846444
-  F1 Score:  0.4025971014492754
-  Test Log Probability:  -248555.3701171875
-  Perplexity Per Visit:  17055707271.72204
-  Perplexity Per Positive Code:  14.34030679503896
-  Perplexity Per Possible Code:  1.0146584351252748
+  Training Speed: 1:13:01 for 33 epochs
+  Validation Loss: 0.0007317
+  Average Test Loss:  0.00071655377
+  Confusion Matrix:  [[16974652    12464]
+                      [   62362    30972]]
+  Accuracy:  0.995619202070203
+  Precision:  0.7130490837093655
+  Recall:  0.33184048685366535
+  F1 Score:  0.4529063391094539
+  Test Log Probability:  -237489.4630126953
+  Perplexity Per Visit:  5974997848.397371
+  Perplexity Per Positive Code:  12.737008179175445
+  Perplexity Per Possible Code:  1.0140012815026942
   Generation Seconds Per Patient: 0.01808318507194519
   Violations: 0
   Percent Validity: 1.0
@@ -71,19 +71,19 @@ ConSequence:
   Per Visit Sequential Visit Bigram Probabilities: 0.9582341802204751
 
 Loss-Based:
-  Training Speed: 2:05:43 for 62 epochs
-  Validation Loss: 0.0007862
-  Average Test Loss:  0.00076741236
-  Confusion Matrix:  [[16975761    11355]
-                      [   69515    23819]]
-  Accuracy:  0.9952653472244584
-  Precision:  0.6771763234207084
-  Recall:  0.25520174855893885
-  F1 Score:  0.3707006567684502
-  Test Log Probability:  -255798.90966796875
-  Perplexity Per Visit:  33888519922.401184
-  Perplexity Per Positive Code:  15.497566742980629
-  Perplexity Per Possible Code:  1.0150888264307387
+  Training Speed: 1:32:15 for 33 epochs
+  Validation Loss: 0.0007492
+  Average Test Loss:  0.0007311218
+  Confusion Matrix:  [[16975628    11488]
+                      [   66858    26476]]
+  Accuracy:  0.9954131185068309
+  Precision:  0.6973975345063744
+  Recall:  0.2836694023614117
+  F1 Score:  0.40329631829883167
+  Test Log Probability:  -242316.6923828125
+  Perplexity Per Visit:  9441746975.348549
+  Perplexity Per Positive Code:  13.413098520158828
+  Perplexity Per Possible Code:  1.0142878962296091
   Generation Seconds Per Patient: 0.02184145945549011
   Violations: 52476
   Percent Validity: 0.64674
@@ -95,19 +95,19 @@ Loss-Based:
   Per Visit Sequential Visit Bigram Probabilities: 0.945712774662825
 
 CCN:
-  Training Speed: 4:55:49 for 33 epochs
-  Validation Loss: 0.0007389
-  Average Test Loss:  0.00072787394
-  Confusion Matrix:  [[16973897    13219]
-                      [   64053    29281]]
-  Accuracy:  0.9954759974122461
-  Precision:  0.6889647058823529
-  Recall:  0.3137227591231491
-  F1 Score:  0.43112917237216014
-  Test Log Probability:  -241255.5838623047
-  Perplexity Per Visit:  8538300790.198916
-  Perplexity Per Positive Code:  13.26146939023965
-  Perplexity Per Possible Code:  1.0142248864085295
+  Training Speed: 4:54:25 for 33 epochs
+  Validation Loss: 0.0007436
+  Average Test Loss:  0.0007279937
+  Confusion Matrix:  [[16974102    13014]
+  [   64223    29111]]
+  Accuracy:  0.9954780465385865
+  Precision:  0.6910623145400594
+  Recall:  0.3119013435618317
+  F1 Score:  0.4298127108571598
+  Test Log Probability:  -241280.42126464844
+  Perplexity Per Visit:  8558425817.753045
+  Perplexity Per Positive Code:  13.264998910896999
+  Perplexity Per Possible Code:  1.0142263612367621
   Generation Seconds Per Patient: 0.019456084694862364
   Violations: 52476
   Percent Validity: 0.70191
@@ -117,3 +117,7 @@ CCN:
   Per Visit Bigram Probabilities: 0.9853831177487341
   Per Record Sequential Visit Bigram Probabilities: 0.9683799659287358
   Per Visit Sequential Visit Bigram Probabilities: 0.9682238010240121
+
+SPL:
+  Training Speed: 2:46:09 for 18 epochs
+  

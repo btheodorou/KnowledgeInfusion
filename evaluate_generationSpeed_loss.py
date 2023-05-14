@@ -8,16 +8,9 @@ from sklearn import metrics
 from ruleModels.lossModel import LossModel
 from config import HALOConfig
 
-RUN = 0
-SEED = RUN
-random.seed(SEED)
-np.random.seed(SEED)
-torch.manual_seed(SEED)
-if torch.cuda.is_available():
-  torch.cuda.manual_seed_all(SEED)
-
+RUNS = 25
 config = HALOConfig()
-NUM_GENERATIONS = 100000
+NUM_GENERATIONS = 10000
 
 device = torch.device("cuda:7" if torch.cuda.is_available() else "cpu")
 

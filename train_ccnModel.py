@@ -15,7 +15,7 @@ if torch.cuda.is_available():
   torch.cuda.manual_seed_all(SEED)
 
 config = HALOConfig()
-device = torch.device("cuda:5" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:6" if torch.cuda.is_available() else "cpu")
 
 train_ehr_dataset = pickle.load(open('./inpatient_data/trainDataset.pkl', 'rb'))
 val_ehr_dataset = pickle.load(open('./inpatient_data/valDataset.pkl', 'rb'))
@@ -55,8 +55,8 @@ global_loss = 1e10
 for e in tqdm(range(config.epoch)):
   shuffle_training_data(train_ehr_dataset)
   model.train()
-  for i in range(0, len(train_ehr_dataset), config.ccn_batch_size):        
-    batch_ehr, batch_mask = get_batch(train_ehr_dataset, i, config.ccn_batch_size)
+  for i in range(0, len(train_ehr_dataset), config.batch_size):        
+    batch_ehr, batch_mask = get_batch(train_ehr_dataset, i, config.batch_size)
     batch_ehr = torch.tensor(batch_ehr, dtype=torch.float32).to(device)
     batch_mask = torch.tensor(batch_mask, dtype=torch.float32).to(device)
     
@@ -65,14 +65,14 @@ for e in tqdm(range(config.epoch)):
     loss.backward()
     optimizer.step()
     
-    if i % (40000*config.ccn_batch_size) == 0:
+    if i % (40000*config.batch_size) == 0:
       print("Epoch %d, Iter %d: Training Loss:%.6f"%(e, i, loss))
     
   model.eval()
   with torch.no_grad():
     val_l = []
-    for v_i in range(0, len(val_ehr_dataset), config.ccn_batch_size):
-      batch_ehr, batch_mask = get_batch(val_ehr_dataset, v_i, config.ccn_batch_size)
+    for v_i in range(0, len(val_ehr_dataset), config.batch_size):
+      batch_ehr, batch_mask = get_batch(val_ehr_dataset, v_i, config.batch_size)
       batch_ehr = torch.tensor(batch_ehr, dtype=torch.float32).to(device)
       batch_mask = torch.tensor(batch_mask, dtype=torch.float32).to(device)
 
