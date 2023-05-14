@@ -120,4 +120,7 @@ CCN:
 
 SPL:
   Training Speed: 2:46:09 for 18 epochs
-  
+  Test Log Probability:  -291806.66552734375
+  Perplexity Per Visit:  1028784964837.5472
+  Perplexity Per Positive Code:  22.793551244719886
+  Perplexity Per Possible Code:  1.017231019691027
