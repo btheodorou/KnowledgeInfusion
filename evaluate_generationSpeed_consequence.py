@@ -78,8 +78,8 @@ for run in tqdm(range(RUNS)):
     
   synthetic_ehr_dataset = []
   start = time()
-  for i in tqdm(range(0, NUM_GENERATIONS, 1024), leave=False):
-    bs = min([NUM_GENERATIONS-i, 1024])
+  for i in tqdm(range(0, NUM_GENERATIONS, config.sample_batch_size), leave=False):
+    bs = min([NUM_GENERATIONS-i, config.sample_batch_size])
     batch_synthetic_ehrs = sample_sequence(model, config.n_ctx, stoken, batch_size=bs, device=device, sample=True)
     batch_synthetic_ehrs = convert_ehr(batch_synthetic_ehrs)
     synthetic_ehr_dataset += batch_synthetic_ehrs
