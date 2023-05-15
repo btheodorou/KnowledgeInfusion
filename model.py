@@ -223,3 +223,50 @@ class HALOModel(nn.Module):
             i = i + first_nonzero + 1
         
         return input_visits
+
+
+class HALOModelMPN(nn.Module):
+    def __init__(self, config):
+        super(HALOModel, self).__init__()
+        self.transformer = CoarseTransformerModel(config)
+        self.ehr_head = FineAutoregressiveHead(config)
+
+    def forward(self, input_visits, position_ids=None, ehr_labels=None, ehr_masks=None, past=None):
+        hidden_states = self.transformer(input_visits, position_ids, past)
+        code_logits = self.ehr_head(hidden_states, input_visits)
+        sig = nn.Sigmoid()
+        code_probs = sig(code_logits)
+        if ehr_labels is not None:    
+            shift_labels = ehr_labels[..., 1:, :].contiguous()
+            if ehr_masks is not None:
+                code_probs = code_probs * ehr_masks
+                shift_labels = shift_labels * ehr_masks
+
+            bce = nn.BCELoss()
+            loss = bce(code_probs, shift_labels)
+            return loss, code_probs, shift_labels
+        
+        return code_probs
+
+    def sample(self, input_visits, random=True):
+        sig = nn.Sigmoid()
+        hidden_states = self.transformer(input_visits)
+        i = 0
+        while i < self.ehr_head.tot_vocab:
+            next_logits = self.ehr_head.sample(hidden_states, input_visits)
+            next_probs = sig(next_logits)
+            if random:
+                visit = torch.bernoulli(next_probs)
+            else:
+                visit = torch.round(next_probs)
+            
+            remaining_visit = visit[:,0,i:]
+            nonzero = torch.nonzero(remaining_visit, as_tuple=True)[1]
+            if nonzero.numel() == 0:
+                break
+
+            first_nonzero = nonzero.min()
+            input_visits[:,-1,i + first_nonzero] = visit[:,0,i + first_nonzero]
+            i = i + first_nonzero + 1
+        
+        return input_visits
