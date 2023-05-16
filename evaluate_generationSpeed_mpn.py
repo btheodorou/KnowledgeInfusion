@@ -17,10 +17,12 @@ device = torch.device("cuda:6" if torch.cuda.is_available() else "cpu")
 
         
         
-def correct_with_mpn(vec, batch_size):
+def correct_with_mpn(vec):
     preds = logic_pred(vec[:, -1, :])
-    print(decoder(torch.tile(torch.arange(config.total_vocab_size, dtype=torch.float32), (batch_size, 1)), vec[:, -1, :], True))
-    vec[:, -1, :] =decoder(torch.tile(torch.arange(config.total_vocab_size, dtype=torch.float32), (batch_size, 1)), vec[:, -1, :], True)[0]
+    print("pred: ", decoder(vec[:, -1, :], preds, False)[0].shape)
+    print("log_py", decoder(vec[:, -1, :], preds, False)[1].shape)
+    print("output", decoder(vec[:, -1, :], preds, True).shape)
+    return decoder(vec[:, -1, :], preds, True)
     
 
     
@@ -29,12 +31,11 @@ def sample_sequence(model, length, context, batch_size, device='cuda', sample=Tr
   context = torch.tensor(context, device=device, dtype=torch.float32).unsqueeze(0).repeat(batch_size, 1)
   prev = context.unsqueeze(1)
   context = None
-  correct_with_mpn(prev, batch_size)
-  print("hola")
+  correct_with_mpn(prev)
   with torch.no_grad():
     for _ in range(length-1):
       prev = model.sample(torch.cat((prev,empty), dim=1), sample)
-      correct_with_mpn(prev, batch_size)
+      correct_with_mpn(prev)
       if torch.sum(torch.sum(prev[:,:,config.code_vocab_size+config.label_vocab_size+1], dim=1).bool().int(), dim=0).item() == batch_size:
         break
   ehr = prev.cpu().detach().numpy()
@@ -44,7 +45,6 @@ def sample_sequence(model, length, context, batch_size, device='cuda', sample=Tr
   return ehr
 
 def convert_ehr(ehrs, index_to_code=None):
-  print("hello")
   ehr_outputs = []
   for i in range(len(ehrs)):
     ehr = ehrs[i]
@@ -78,25 +78,25 @@ def convert_ehr(ehrs, index_to_code=None):
 model = HALOModel(config).to(device)
 #checkpoint = torch.load('./save/mpn_model', map_location=torch.device(device))
 #model.load_state_dict(checkpoint['model'])
+#for outpatient
+#dnf_rules = "(1817 & ~1169 & ~1818 & ~1819 & ~1820 & ~1821 & ~1822) | (1817 & ~1169 & ~1818 & ~1819 & ~1820 & ~1821 & ~1823) | (1818 & ~1169 & ~1817 & ~1819 & ~1820 & ~1821 & ~1822) | (1818 & ~1169 & ~1817 & ~1819 & ~1820 & ~1821 & ~1823) | (1819 & ~1169 & ~1817 & ~1818 & ~1820 & ~1821 & ~1822) | (1819 & ~1169 & ~1817 & ~1818 & ~1820 & ~1821 & ~1823) | (1820 & ~1169 & ~1817 & ~1818 & ~1819 & ~1821 & ~1822) | (1820 & ~1169 & ~1817 & ~1818 & ~1819 & ~1821 & ~1823) | (1821 & ~1169 & ~1817 & ~1818 & ~1819 & ~1820 & ~1822) | (1821 & ~1169 & ~1817 & ~1818 & ~1819 & ~1820 & ~1823) | (1596 & 1817 & 1823 & 512 & ~1818 & ~1819 & ~1820 & ~1821 & ~1822) | (1596 & 1818 & 1823 & 512 & ~1817 & ~1819 & ~1820 & ~1821 & ~1822) | (1596 & 1819 & 1823 & 512 & ~1817 & ~1818 & ~1820 & ~1821 & ~1822) | (1596 & 1820 & 1823 & 512 & ~1817 & ~1818 & ~1819 & ~1821 & ~1822) | (1596 & 1821 & 1823 & 512 & ~1817 & ~1818 & ~1819 & ~1820 & ~1822)"
+
+#for inpatient:
+dnf_rules = "(1158 & 1610 & 288 & 93 & ~1611 & ~1612 & ~1613 & ~1614) | (1158 & 1610 & 288 & 93 & ~1611 & ~1612 & ~1613 & ~1615) | (1158 & 1611 & 288 & 93 & ~1610 & ~1612 & ~1613 & ~1614) | (1158 & 1611 & 288 & 93 & ~1610 & ~1612 & ~1613 & ~1615) | (1158 & 1612 & 288 & 93 & ~1610 & ~1611 & ~1613 & ~1614) | (1158 & 1612 & 288 & 93 & ~1610 & ~1611 & ~1613 & ~1615) | (1158 & 1613 & 288 & 93 & ~1610 & ~1611 & ~1612 & ~1614) | (1158 & 1613 & 288 & 93 & ~1610 & ~1611 & ~1612 & ~1615) | (1158 & 1610 & 93 & ~1366 & ~1611 & ~1612 & ~1613 & ~1614) | (1158 & 1610 & 93 & ~1366 & ~1611 & ~1612 & ~1613 & ~1615) | (1158 & 1611 & 93 & ~1366 & ~1610 & ~1612 & ~1613 & ~1614) | (1158 & 1611 & 93 & ~1366 & ~1610 & ~1612 & ~1613 & ~1615) | (1158 & 1612 & 93 & ~1366 & ~1610 & ~1611 & ~1613 & ~1614) | (1158 & 1612 & 93 & ~1366 & ~1610 & ~1611 & ~1613 & ~1615) | (1158 & 1613 & 93 & ~1366 & ~1610 & ~1611 & ~1612 & ~1614) | (1158 & 1613 & 93 & ~1366 & ~1610 & ~1611 & ~1612 & ~1615) | (1610 & 288 & 93 & ~1297 & ~1611 & ~1612 & ~1613 & ~1614) | (1610 & 288 & 93 & ~1297 & ~1611 & ~1612 & ~1613 & ~1615) | (1611 & 288 & 93 & ~1297 & ~1610 & ~1612 & ~1613 & ~1614) | (1611 & 288 & 93 & ~1297 & ~1610 & ~1612 & ~1613 & ~1615) | (1612 & 288 & 93 & ~1297 & ~1610 & ~1611 & ~1613 & ~1614) | (1612 & 288 & 93 & ~1297 & ~1610 & ~1611 & ~1613 & ~1615) | (1613 & 288 & 93 & ~1297 & ~1610 & ~1611 & ~1612 & ~1614) | (1613 & 288 & 93 & ~1297 & ~1610 & ~1611 & ~1612 & ~1615) | (1610 & 93 & ~1297 & ~1366 & ~1611 & ~1612 & ~1613 & ~1614) | (1610 & 93 & ~1297 & ~1366 & ~1611 & ~1612 & ~1613 & ~1615) | (1611 & 93 & ~1297 & ~1366 & ~1610 & ~1612 & ~1613 & ~1614) | (1611 & 93 & ~1297 & ~1366 & ~1610 & ~1612 & ~1613 & ~1615) | (1612 & 93 & ~1297 & ~1366 & ~1610 & ~1611 & ~1613 & ~1614) | (1612 & 93 & ~1297 & ~1366 & ~1610 & ~1611 & ~1613 & ~1615) | (1613 & 93 & ~1297 & ~1366 & ~1610 & ~1611 & ~1612 & ~1614) | (1613 & 93 & ~1297 & ~1366 & ~1610 & ~1611 & ~1612 & ~1615) | (1158 & 1610 & 288 & ~1196 & ~1611 & ~1612 & ~1613 & ~1614 & ~514) | (1158 & 1610 & 288 & ~1196 & ~1611 & ~1612 & ~1613 & ~1615 & ~514) | (1158 & 1611 & 288 & ~1196 & ~1610 & ~1612 & ~1613 & ~1614 & ~514) | (1158 & 1611 & 288 & ~1196 & ~1610 & ~1612 & ~1613 & ~1615 & ~514) | (1158 & 1612 & 288 & ~1196 & ~1610 & ~1611 & ~1613 & ~1614 & ~514) | (1158 & 1612 & 288 & ~1196 & ~1610 & ~1611 & ~1613 & ~1615 & ~514) | (1158 & 1613 & 288 & ~1196 & ~1610 & ~1611 & ~1612 & ~1614 & ~514) | (1158 & 1613 & 288 & ~1196 & ~1610 & ~1611 & ~1612 & ~1615 & ~514) | (1158 & 1610 & ~1196 & ~1366 & ~1611 & ~1612 & ~1613 & ~1614 & ~514) | (1158 & 1610 & ~1196 & ~1366 & ~1611 & ~1612 & ~1613 & ~1615 & ~514) | (1158 & 1611 & ~1196 & ~1366 & ~1610 & ~1612 & ~1613 & ~1614 & ~514) | (1158 & 1611 & ~1196 & ~1366 & ~1610 & ~1612 & ~1613 & ~1615 & ~514) | (1158 & 1612 & ~1196 & ~1366 & ~1610 & ~1611 & ~1613 & ~1614 & ~514) | (1158 & 1612 & ~1196 & ~1366 & ~1610 & ~1611 & ~1613 & ~1615 & ~514) | (1158 & 1613 & ~1196 & ~1366 & ~1610 & ~1611 & ~1612 & ~1614 & ~514) | (1158 & 1613 & ~1196 & ~1366 & ~1610 & ~1611 & ~1612 & ~1615 & ~514) | (1610 & 288 & ~1196 & ~1297 & ~1611 & ~1612 & ~1613 & ~1614 & ~514) | (1610 & 288 & ~1196 & ~1297 & ~1611 & ~1612 & ~1613 & ~1615 & ~514) | (1611 & 288 & ~1196 & ~1297 & ~1610 & ~1612 & ~1613 & ~1614 & ~514) | (1611 & 288 & ~1196 & ~1297 & ~1610 & ~1612 & ~1613 & ~1615 & ~514) | (1612 & 288 & ~1196 & ~1297 & ~1610 & ~1611 & ~1613 & ~1614 & ~514) | (1612 & 288 & ~1196 & ~1297 & ~1610 & ~1611 & ~1613 & ~1615 & ~514) | (1613 & 288 & ~1196 & ~1297 & ~1610 & ~1611 & ~1612 & ~1614 & ~514) | (1613 & 288 & ~1196 & ~1297 & ~1610 & ~1611 & ~1612 & ~1615 & ~514) | (1610 & ~1196 & ~1297 & ~1366 & ~1611 & ~1612 & ~1613 & ~1614 & ~514) | (1610 & ~1196 & ~1297 & ~1366 & ~1611 & ~1612 & ~1613 & ~1615 & ~514) | (1611 & ~1196 & ~1297 & ~1366 & ~1610 & ~1612 & ~1613 & ~1614 & ~514) | (1611 & ~1196 & ~1297 & ~1366 & ~1610 & ~1612 & ~1613 & ~1615 & ~514) | (1612 & ~1196 & ~1297 & ~1366 & ~1610 & ~1611 & ~1613 & ~1614 & ~514) | (1612 & ~1196 & ~1297 & ~1366 & ~1610 & ~1611 & ~1613 & ~1615 & ~514) | (1613 & ~1196 & ~1297 & ~1366 & ~1610 & ~1611 & ~1612 & ~1614 & ~514) | (1613 & ~1196 & ~1297 & ~1366 & ~1610 & ~1611 & ~1612 & ~1615 & ~514)"
+
 logic_terms = []
-for rule in config.rules: #where to get rules?
-  if(rule[0]==[]):
-    #this is (a and b and c) implies d <=> not (a and b and c) implies d <=> not a or not b or not c or d
-    #so normal = negative; neg = positive; not = everything else
-    #improve this conversion later to account for repeats
-    #wait this conversion sucks
-    #(a and b and c implies d) and (b and q implies x) this'll be in cnf
-    #use an automated solver to convert to dnf??
-    #(a to b) and (c to d) and (f to g) = (not a or b) and (not a or d) and (not f or g)
-    #so ends up being (not a and not a and not f) or (not a and not a and not g) or ... 
-    for code in rule[4]:
-        logic_terms.append(symbolic.GEQConstant([code], [], [], 1, 0, 1))
-    for code in rule[3]:
-        logic_terms.append(symbolic.GEQConstant([], [], [code], 1, 0, 1))
-    if(rule[6]==0):
-        logic_terms.append(symbolic.GEQConstant([], [], [rule[5]], 1, 0, 1))
-    else:
-        logic_terms.append(symbolic.GEQConstant([rule[5]], [], [], 1, 0, 1))
+for clause in dnf_rules.split('|'):
+    lm = [i.strip() for i in clause.strip("() ").split('&')]
+    la = []
+    lb = []
+    for lit in lm:
+        if(lit[0]=='~'):
+            lb.append(int(lit[1:]))
+        else:
+            la.append(int(lit))
+    lc = [i for i in range(config.total_vocab_size) if (i not in la and i not in lb)]
+    print(len(la)+len(lb)+len(lc))
+    logic_terms.append(symbolic.GEQConstant(la, lc, lb, 1, 0, 1))
     
     
 
