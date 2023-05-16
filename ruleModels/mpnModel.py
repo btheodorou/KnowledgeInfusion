@@ -39,49 +39,6 @@ class MultiPlexNetModel(HALOModel):
         code_logits = self.ehr_head(hidden_states, input_visits)
         sig = nn.Sigmoid()
         code_probs = sig(code_logits)
-        for (past_visits, past_codes, past_non_codes, current_codes, current_non_codes, output_code, output_value) in self.rules:
-            if past_visits == -1:
-                pastVisits = torch.tril(torch.ones(self.n_ctx, self.n_ctx, device=input_visits.device), diagonal=-1)
-            else:
-                pastVisits = torch.zeros(self.n_ctx, self.n_ctx, device=input_visits.device)
-                for v in past_visits:
-                    if v >= 0:
-                        pastVisits[v+1:,v] = 1
-                    else:
-                        pastVisits[list(range(-v, self.n_ctx)), [i + v for i in range(-v, self.n_ctx)]]
-            
-            if past_codes or past_non_codes:
-                pastMatrix = torch.zeros(self.total_vocab_size, self.total_vocab_size, device=input_visits.device)
-                pastBias = torch.zeros(self.total_vocab_size, device=input_visits.device)
-                pastMatrix[past_non_codes, output_code] = -1
-                if past_codes:
-                    pastMatrix[past_codes, output_code] = 1 / len(past_codes)
-                else:
-                    pastBias[output_code] = 1
-            else:
-                pastMatrix = torch.tensor([])
-                pastBias = torch.tensor([])
-            
-            if current_codes or current_non_codes:
-                currMatrix = torch.zeros(self.total_vocab_size, self.total_vocab_size, device=input_visits.device)
-                currBias = torch.zeros(self.total_vocab_size, device=input_visits.device)
-                currMatrix[current_non_codes, output_code] = -1
-                if current_codes:
-                    currMatrix[current_codes, output_code] = 1 / len(current_codes)
-                else:
-                    currBias[output_code] = 1
-            else:
-                currMatrix = torch.tensor([])
-                currBias = torch.tensor([])
-
-            if pastMatrix.numel() == 0:
-                code_probs = torch.where(((input_visits[:,1:] @ currMatrix) + currBias) == 1, output_value, code_probs)
-            else:
-                past_visits = pastVisits @ input_visits
-                if currMatrix.numel() == 0:
-                    code_probs = torch.where(((past_visits[:,1:] @ pastMatrix) + pastBias) == 1, output_value, code_probs)
-                else:
-                    code_probs = torch.where((((past_visits[:,1:] @ pastMatrix) + pastBias) == 1) & (((input_visits[:,1:] @ currMatrix) + currBias) == 1), output_value, code_probs)            
         if ehr_labels is not None:    
             shift_labels = ehr_labels[..., 1:, :].contiguous()
             if ehr_masks is not None:
