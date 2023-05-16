@@ -12,17 +12,14 @@ from torch import nn
 RUNS = 1
 
 config = HALOConfig()
-NUM_GENERATIONS = 10000
+NUM_GENERATIONS = 120
 device = torch.device("cuda:6" if torch.cuda.is_available() else "cpu")
 
         
         
 def correct_with_mpn(vec):
     preds = logic_pred(vec[:, -1, :])
-    print("pred: ", decoder(vec[:, -1, :], preds, False)[0].shape)
-    print("log_py", decoder(vec[:, -1, :], preds, False)[1].shape)
-    print("output", decoder(vec[:, -1, :], preds, True).shape)
-    return decoder(vec[:, -1, :], preds, True)
+    vec[:, -1, :] = decoder(vec[:, -1, :], preds, True)
     
 
     
@@ -95,7 +92,6 @@ for clause in dnf_rules.split('|'):
         else:
             la.append(int(lit))
     lc = [i for i in range(config.total_vocab_size) if (i not in la and i not in lb)]
-    print(len(la)+len(lb)+len(lc))
     logic_terms.append(symbolic.GEQConstant(la, lc, lb, 1, 0, 1))
     
     

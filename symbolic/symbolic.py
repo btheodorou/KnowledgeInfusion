@@ -47,7 +47,7 @@ class GEQConstant(nn.Module):
         self.threshold_lower = threshold_lower
         self.threshold_limit = threshold_limit
 
-        self.forward_transform = self.ixs1 + self.ixs_neg
+        self.forward_transform = self.ixs1 + self.ixs_neg + self.ixs_not
         self.reverse_transform = np.argsort(self.forward_transform)
 
     def threshold1p(self):
@@ -62,7 +62,6 @@ class GEQConstant(nn.Module):
 
         restricted1 = F.softplus(split1) + self.threshold_upper
         restricted2 = torch.ones_like(split2) * self.threshold_lower
-
         return torch.cat((restricted1, restricted2, split3), dim=1)[
             :, self.reverse_transform
         ]
