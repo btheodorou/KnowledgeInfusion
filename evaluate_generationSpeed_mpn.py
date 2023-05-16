@@ -5,10 +5,8 @@ import random
 import numpy as np
 from tqdm import tqdm
 from sklearn import metrics
-from model import HALOModel
+from ruleModels.mpnModel import MultiPlexNetModel
 from config import HALOConfig
-from symbolic import symbolic
-from torch import nn
 RUNS = 1
 
 config = HALOConfig()
@@ -66,7 +64,7 @@ def convert_ehr(ehrs, index_to_code=None):
   indices = None
   return ehr_outputs
 
-model = HALOModel(config).to(device)
+model = MultiPlexNetModel(config).to(device)
 #checkpoint = torch.load('./save/mpn_model', map_location=torch.device(device))
 #model.load_state_dict(checkpoint['model'])
 #for outpatient
