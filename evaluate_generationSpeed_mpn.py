@@ -12,7 +12,7 @@ from torch import nn
 RUNS = 1
 
 config = HALOConfig()
-NUM_GENERATIONS = 120
+NUM_GENERATIONS = 100
 device = torch.device("cuda:6" if torch.cuda.is_available() else "cpu")
 
         
@@ -38,8 +38,7 @@ def sample_sequence(model, length, context, batch_size, device='cuda', sample=Tr
   ehr = prev.cpu().detach().numpy()
   prev = None
   empty = None
-  preds = logic_pred(ehr)
-  return ehr
+  return ehr.cpu().detach().numpy()
 
 def convert_ehr(ehrs, index_to_code=None):
   ehr_outputs = []

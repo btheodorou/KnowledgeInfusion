@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from config import HALOConfig
 from sklearn.metrics import r2_score
 config = HALOConfig()
-RUNS = 25
+RUNS = 1
 # (which past visits, 
 # which positive codes from past visits, 
 # which negative codes from past visits,
@@ -48,10 +48,10 @@ def evaluateDataset(dataset, rules):
   return results
   
 # Extract and save statistics
-for i in tqdm(range(10)):
+for i in tqdm(range(1)):
   # base_ehr_dataset = pickle.load(open(f'./results/baseDataset_{i}.pkl', 'rb'))
   # processed_ehr_dataset = pickle.load(open(f'./results/postProcessedDataset_{i}.pkl', 'rb'))
-  consequence_ehr_dataset = pickle.load(open(f'./results/base_model.pkl', 'rb'))
+  consequence_ehr_dataset = pickle.load(open(f'./results/mpnDataset_0.pkl', 'rb'))
   # loss_ehr_dataset = pickle.load(open(f'./results/lossBaselineDataset_{i}.pkl', 'rb'))
   # ccn_ehr_dataset = pickle.load(open(f'./results/ccnDataset_{i}.pkl', 'rb'))
 
@@ -63,7 +63,7 @@ for i in tqdm(range(10)):
   # ccn_violations = evaluateDataset(ccn_ehr_dataset, config.rules)
   # pickle.dump(base_violations, open(f'results/violation_stats/Base_Violation_Stats_{i}.pkl', 'wb'))
   # pickle.dump(processed_violations, open(f'results/violation_stats/Processed_Violation_Stats_{i}.pkl', 'wb'))
-  pickle.dump(consequence_violations, open(f'results/violation_stats/ConSequence_Violation_Stats_{i}.pkl', 'wb'))
+  pickle.dump(consequence_violations, open(f'./results/violation_stats/ConSequence_Violation_Stats_0.pkl', 'wb'))
   # pickle.dump(loss_violations, open(f'results/violation_stats/Loss_Violation_Stats_{i}.pkl', 'wb'))
   # pickle.dump(ccn_violations, open(f'results/violation_stats/CCN_Violation_Stats_{i}.pkl', 'wb'))
 

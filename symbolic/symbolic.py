@@ -60,8 +60,8 @@ class GEQConstant(nn.Module):
         split2 = x[:, self.ixs_neg]
         split3 = x[:, self.ixs_not]
 
-        restricted1 = F.softplus(split1) + self.threshold_upper
-        restricted2 = torch.ones_like(split2) * self.threshold_lower
+        restricted1 = torch.ones_like(split1)
+        restricted2 = torch.zeros_like(split2)
         return torch.cat((restricted1, restricted2, split3), dim=1)[
             :, self.reverse_transform
         ]
@@ -316,7 +316,6 @@ class OrList(nn.Module):
     def forward(self, x, class_prediction, test=False):
         pred = self.all_predictions(x)
         log_py = class_prediction.log_softmax(dim=1)
-
         if test:
             return pred[np.arange(len(log_py)), log_py.argmax(dim=1)]
 
