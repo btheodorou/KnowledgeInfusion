@@ -4,7 +4,7 @@ import numpy as np
 import random
 import pickle
 from tqdm import tqdm
-from ruleModels.ccnModel import CCNModel
+from model import MultiPlexNetModel
 from config import HALOConfig
 
 SEED = 4
@@ -14,15 +14,16 @@ torch.manual_seed(SEED)
 if torch.cuda.is_available():
   torch.cuda.manual_seed_all(SEED)
 
-config = HALOConfig()
+config = HALOConfig(rules=pickle.load(open('../../inpatient_data/rules.pkl', 'rb')))
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-train_ehr_dataset = pickle.load(open('./inpatient_data/trainDataset.pkl', 'rb'))
-val_ehr_dataset = pickle.load(open('./inpatient_data/valDataset.pkl', 'rb'))
+train_ehr_dataset = pickle.load(open('../../inpatient_data/trainDataset.pkl', 'rb'))
+val_ehr_dataset = pickle.load(open('../../inpatient_data/valDataset.pkl', 'rb'))
+PATIENCE = 5
 
 def get_batch(dataset, loc, batch_size):
   ehr = dataset[loc:loc+batch_size]
-    
   batch_ehr = np.zeros((len(ehr), config.n_ctx, config.total_vocab_size))
   batch_mask = np.zeros((len(ehr), config.n_ctx, 1))
   for i, p in enumerate(ehr):
@@ -42,20 +43,21 @@ def get_batch(dataset, loc, batch_size):
 def shuffle_training_data(train_ehr_dataset):
   np.random.shuffle(train_ehr_dataset)
 
-model = CCNModel(config).to(device)
+model = MultiPlexNetModel(config).to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
-if os.path.exists("./save/ccn_model"):
+if os.path.exists("./save/mpn_model"):
   print("Loading previous model")
-  checkpoint = torch.load('./save/ccn_model', map_location=torch.device(device))
+  checkpoint = torch.load('./save/mpn_model', map_location=torch.device(device))
   model.load_state_dict(checkpoint['model'])
   optimizer.load_state_dict(checkpoint['optimizer'])
 
 # Train
 global_loss = 1e10
-for e in tqdm(range(config.epoch)):
+patience = 0
+for e in tqdm(range(2)):
   shuffle_training_data(train_ehr_dataset)
   model.train()
-  for i in range(0, len(train_ehr_dataset), config.batch_size):        
+  for i in range(0, len(train_ehr_dataset), config.batch_size):    
     batch_ehr, batch_mask = get_batch(train_ehr_dataset, i, config.batch_size)
     batch_ehr = torch.tensor(batch_ehr, dtype=torch.float32).to(device)
     batch_mask = torch.tensor(batch_mask, dtype=torch.float32).to(device)
@@ -65,7 +67,7 @@ for e in tqdm(range(config.epoch)):
     loss.backward()
     optimizer.step()
     
-    if i % (40000*config.batch_size) == 0:
+    if i % (5000*config.batch_size) == 0:
       print("Epoch %d, Iter %d: Training Loss:%.6f"%(e, i, loss))
     
   model.eval()
@@ -82,11 +84,16 @@ for e in tqdm(range(config.epoch)):
     cur_val_loss = np.mean(val_l)
     print("Epoch %d Validation Loss:%.7f"%(e, cur_val_loss))
     if cur_val_loss < global_loss:
+      patience = 0
       global_loss = cur_val_loss
       state = {
             'model': model.state_dict(),
             'optimizer': optimizer.state_dict(),
             'iteration': i
         }
-      torch.save(state, './save/ccn_model')
+      torch.save(state, '../../save/mpn_model')
       print('\n------------ Save best model ------------\n')
+    else:
+      patience += 1
+      if patience == PATIENCE:
+        break

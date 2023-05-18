@@ -5,16 +5,20 @@ from sklearn.metrics import r2_score
 NUM_RUNS = 25
 
 # Training Speeds
-base_speed = 'Base Speed: 1:20:41 for 42 epochs'
-processing_speed = 'Processing Speed: 1:20:41 for 42 epochs'
-consequence_speed = '1:13:01 for 33 epochs'
-ccn_speed = '4:54:00 for 33 epochs'
-loss_speed = ''
+base_speed = 'Base Speed: 1:30:38'
+processing_speed = 'Processing Speed: 1:30:38'
+consequence_speed = 'Consequence Speed: 1:20:53'
+ccn_speed = '4:38:13'
+loss_speed = '1:44:16'
+mpn_speed = '3:44:53'
+spl_speed = '2:46:09'
 print(base_speed)
 print(processing_speed)
 print(consequence_speed)
 print(ccn_speed)
 print(loss_speed)
+print(mpn_speed)
+print(spl_speed)
 print()
 
 # Generation Speeds
@@ -23,11 +27,13 @@ processing_speeds = [pickle.load(open(f'results/generationSpeeds/postProcessedSp
 consequence_speeds = [pickle.load(open(f'results/generationSpeeds/conSequenceSpeed_{i}.pkl', 'rb')) for i in range(NUM_RUNS)]
 ccn_speeds = [pickle.load(open(f'results/generationSpeeds/ccnSpeed_{i}.pkl', 'rb')) for i in range(NUM_RUNS)]
 loss_speeds = [pickle.load(open(f'results/generationSpeeds/lossBaselineSpeed_{i}.pkl', 'rb')) for i in range(NUM_RUNS)]
+mpn_speeds = [pickle.load(open(f'results/generationSpeeds/mpnBaselineSpeed_{i}.pkl', 'rb')) for i in range(NUM_RUNS)]
 print(f'Base Speed: {np.mean(base_speeds)} \pm {np.std(base_speeds) / np.sqrt(NUM_RUNS) * 1.96}')
 print(f'Post Processed Speed: {np.mean(processing_speeds)} \pm {np.std(processing_speeds) / np.sqrt(NUM_RUNS) * 1.96}')
 print(f'ConSequence Speed: {np.mean(consequence_speeds)} \pm {np.std(consequence_speeds) / np.sqrt(NUM_RUNS) * 1.96}')
 print(f'CCN Speed: {np.mean(ccn_speeds)} \pm {np.std(ccn_speeds) / np.sqrt(NUM_RUNS) * 1.96}')
 print(f'Loss Baseline Speed: {np.mean(loss_speeds)} \pm {np.std(loss_speeds) / np.sqrt(NUM_RUNS) * 1.96}')
+print(f'MPN Speed: {np.mean(mpn_speeds)} \pm {np.std(mpn_speeds) / np.sqrt(NUM_RUNS) * 1.96}')
 print()
 
 base_violations = [pickle.load(open(f'results/violation_stats/Base_Violation_Stats_{i}.pkl', 'rb'))['Total Number'] for i in range(NUM_RUNS)]
@@ -35,11 +41,13 @@ processing_violations = [pickle.load(open(f'results/violation_stats/Processed_Vi
 consequence_violations = [pickle.load(open(f'results/violation_stats/ConSequence_Violation_Stats_{i}.pkl', 'rb'))['Total Number'] for i in range(NUM_RUNS)]
 ccn_violations = [pickle.load(open(f'results/violation_stats/CCN_Violation_Stats_{i}.pkl', 'rb'))['Total Number'] for i in range(NUM_RUNS)]
 loss_violations = [pickle.load(open(f'results/violation_stats/Loss_Violation_Stats_{i}.pkl', 'rb'))['Total Number'] for i in range(NUM_RUNS)]
+mpn_violations = [pickle.load(open(f'results/violation_stats/MPN_Violation_Stats_{i}.pkl', 'rb'))['Total Number'] for i in range(NUM_RUNS)]
 print(f'Base Violations: {np.mean(base_violations)} \pm {np.std(base_violations) / np.sqrt(NUM_RUNS) * 1.96}')
 print(f'Post Processed Violations: {np.mean(processing_violations)} \pm {np.std(processing_violations) / np.sqrt(NUM_RUNS) * 1.96}')
 print(f'ConSequence Violations: {np.mean(consequence_violations)} \pm {np.std(consequence_violations) / np.sqrt(NUM_RUNS) * 1.96}')
 print(f'CCN Violations: {np.mean(ccn_violations)} \pm {np.std(ccn_violations) / np.sqrt(NUM_RUNS) * 1.96}')
 print(f'Loss Baseline Violations: {np.mean(loss_violations)} \pm {np.std(loss_violations) / np.sqrt(NUM_RUNS) * 1.96}')
+print(f'MPN Violations: {np.mean(mpn_violations)} \pm {np.std(mpn_violations) / np.sqrt(NUM_RUNS) * 1.96}')
 print()
 
 base_static_violations = [sum(pickle.load(open(f'results/violation_stats/Base_Violation_Stats_{i}.pkl', 'rb'))['Per Rule'][-11:]) for i in range(NUM_RUNS)]
@@ -47,11 +55,13 @@ processing_static_violations = [sum(pickle.load(open(f'results/violation_stats/P
 consequence_static_violations = [sum(pickle.load(open(f'results/violation_stats/ConSequence_Violation_Stats_{i}.pkl', 'rb'))['Per Rule'][-11:]) for i in range(NUM_RUNS)]
 ccn_static_violations = [sum(pickle.load(open(f'results/violation_stats/CCN_Violation_Stats_{i}.pkl', 'rb'))['Per Rule'][-11:]) for i in range(NUM_RUNS)]
 loss_static_violations = [sum(pickle.load(open(f'results/violation_stats/Loss_Violation_Stats_{i}.pkl', 'rb'))['Per Rule'][-11:]) for i in range(NUM_RUNS)]
+mpn_static_violations = [sum(pickle.load(open(f'results/violation_stats/MPN_Violation_Stats_{i}.pkl', 'rb'))['Per Rule'][-11:]) for i in range(NUM_RUNS)]
 print(f'Base Static Violations: {np.mean(base_static_violations)} \pm {np.std(base_static_violations) / np.sqrt(NUM_RUNS) * 1.96}')
 print(f'Post Processed Static Violations: {np.mean(processing_static_violations)} \pm {np.std(processing_static_violations) / np.sqrt(NUM_RUNS) * 1.96}')
 print(f'ConSequence Static Violations: {np.mean(consequence_static_violations)} \pm {np.std(consequence_static_violations) / np.sqrt(NUM_RUNS) * 1.96}')
 print(f'CCN Static Violations: {np.mean(ccn_static_violations)} \pm {np.std(ccn_static_violations) / np.sqrt(NUM_RUNS) * 1.96}')
 print(f'Loss Baseline Static Violations: {np.mean(loss_static_violations)} \pm {np.std(loss_static_violations) / np.sqrt(NUM_RUNS) * 1.96}')
+print(f'MPN Static Violations: {np.mean(mpn_static_violations)} \pm {np.std(mpn_static_violations) / np.sqrt(NUM_RUNS) * 1.96}')
 print()
 
 base_temporal_violations = [sum(pickle.load(open(f'results/violation_stats/Base_Violation_Stats_{i}.pkl', 'rb'))['Per Rule'][:-11]) for i in range(NUM_RUNS)]
@@ -59,11 +69,13 @@ processing_temporal_violations = [sum(pickle.load(open(f'results/violation_stats
 consequence_temporal_violations = [sum(pickle.load(open(f'results/violation_stats/ConSequence_Violation_Stats_{i}.pkl', 'rb'))['Per Rule'][:-11]) for i in range(NUM_RUNS)]
 ccn_temporal_violations = [sum(pickle.load(open(f'results/violation_stats/CCN_Violation_Stats_{i}.pkl', 'rb'))['Per Rule'][:-11]) for i in range(NUM_RUNS)]
 loss_temporal_violations = [sum(pickle.load(open(f'results/violation_stats/Loss_Violation_Stats_{i}.pkl', 'rb'))['Per Rule'][:-11]) for i in range(NUM_RUNS)]
+mpn_temporal_violations = [sum(pickle.load(open(f'results/violation_stats/MPN_Violation_Stats_{i}.pkl', 'rb'))['Per Rule'][:-11]) for i in range(NUM_RUNS)]
 print(f'Base Temporal Violations: {np.mean(base_temporal_violations)} \pm {np.std(base_temporal_violations) / np.sqrt(NUM_RUNS) * 1.96}')
 print(f'Post Processed Temporal Violations: {np.mean(processing_temporal_violations)} \pm {np.std(processing_temporal_violations) / np.sqrt(NUM_RUNS) * 1.96}')
 print(f'ConSequence Temporal Violations: {np.mean(consequence_temporal_violations)} \pm {np.std(consequence_temporal_violations) / np.sqrt(NUM_RUNS) * 1.96}')
 print(f'CCN Temporal Violations: {np.mean(ccn_temporal_violations)} \pm {np.std(ccn_temporal_violations) / np.sqrt(NUM_RUNS) * 1.96}')
 print(f'Loss Baseline Temporal Violations: {np.mean(loss_temporal_violations)} \pm {np.std(loss_temporal_violations) / np.sqrt(NUM_RUNS) * 1.96}')
+print(f'MPN Temporal Violations: {np.mean(mpn_temporal_violations)} \pm {np.std(mpn_temporal_violations) / np.sqrt(NUM_RUNS) * 1.96}')
 print()
 
 base_validity = [pickle.load(open(f'results/violation_stats/Base_Validity_Stats_{i}.pkl', 'rb'))['Percent Valid'] for i in range(NUM_RUNS)]
@@ -71,11 +83,13 @@ processing_validity = [pickle.load(open(f'results/violation_stats/Processed_Vali
 consequence_validity = [pickle.load(open(f'results/violation_stats/ConSequence_Validity_Stats_{i}.pkl', 'rb'))['Percent Valid'] for i in range(NUM_RUNS)]
 ccn_validity = [pickle.load(open(f'results/violation_stats/CCN_Validity_Stats_{i}.pkl', 'rb'))['Percent Valid'] for i in range(NUM_RUNS)]
 loss_validity = [pickle.load(open(f'results/violation_stats/Loss_Validity_Stats_{i}.pkl', 'rb'))['Percent Valid'] for i in range(NUM_RUNS)]
+mpn_validity = [pickle.load(open(f'results/violation_stats/MPN_Validity_Stats_{i}.pkl', 'rb'))['Percent Valid'] for i in range(NUM_RUNS)]
 print(f'Base Validity: {np.mean(base_validity)} \pm {np.std(base_validity) / np.sqrt(NUM_RUNS) * 1.96}')
 print(f'Post Processed Validity: {np.mean(processing_validity)} \pm {np.std(processing_validity) / np.sqrt(NUM_RUNS) * 1.96}')
 print(f'ConSequence Validity: {np.mean(consequence_validity)} \pm {np.std(consequence_validity) / np.sqrt(NUM_RUNS) * 1.96}')
 print(f'CCN Validity: {np.mean(ccn_validity)} \pm {np.std(ccn_validity) / np.sqrt(NUM_RUNS) * 1.96}')
 print(f'Loss Baseline Validity: {np.mean(loss_validity)} \pm {np.std(loss_validity) / np.sqrt(NUM_RUNS) * 1.96}')
+print(f'MPN Validity: {np.mean(mpn_validity)} \pm {np.std(mpn_validity) / np.sqrt(NUM_RUNS) * 1.96}')
 print()
 
 train_dataset_stats = pickle.load(open('results/dataset_stats/Train_Stats.pkl', 'rb'))
@@ -84,6 +98,7 @@ processing_dataset_stats = [pickle.load(open(f'results/dataset_stats/Processed_S
 consequence_dataset_stats = [pickle.load(open(f'results/dataset_stats/ConSequence_Synthetic_Stats_{i}.pkl', 'rb')) for i in range(NUM_RUNS)]
 ccn_dataset_stats = [pickle.load(open(f'results/dataset_stats/CCN_Synthetic_Stats_{i}.pkl', 'rb')) for i in range(NUM_RUNS)]
 loss_dataset_stats = [pickle.load(open(f'results/dataset_stats/Loss_Synthetic_Stats_{i}.pkl', 'rb')) for i in range(NUM_RUNS)]
+mpn_dataset_stats = [pickle.load(open(f'results/dataset_stats/MPN_Synthetic_Stats_{i}.pkl', 'rb')) for i in range(NUM_RUNS)]
 
 def print_r2(label, stats1, stats2, types=["Per Visit Code Probabilities", "Per Visit Bigram Probabilities", "Per Visit Sequential Visit Bigram Probabilities"]):
     for t in types:
@@ -102,4 +117,5 @@ print_r2("Post Processed", train_dataset_stats, processing_dataset_stats)
 print_r2("ConSequence", train_dataset_stats, consequence_dataset_stats)
 print_r2("CCN", train_dataset_stats, ccn_dataset_stats)
 print_r2("Loss Baseline", train_dataset_stats, loss_dataset_stats)
+print_r2("MPN", train_dataset_stats, mpn_dataset_stats)
 print()

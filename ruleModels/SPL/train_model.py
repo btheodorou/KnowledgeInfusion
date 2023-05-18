@@ -49,7 +49,6 @@ gate = DenseGatingFunction(cmpe.beta, gate_layers=[config.n_embd] + [256]*config
 
 # Create the model
 model = HALOModel(config).to(device)
-
 optimizer = torch.optim.Adam(list(model.parameters()) + list(gate.parameters()), lr=config.lr)
 
 global_loss = 1e10

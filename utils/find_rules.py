@@ -5,7 +5,7 @@ from config import HALOConfig
 from collections import Counter
 
 config = HALOConfig()
-data = pickle.load(open('./inpatient_data/allData.pkl', 'rb'))
+data = pickle.load(open('../inpatient_data/allData.pkl', 'rb'))
 
 # (which past visits, which positive codes from past visits, which negative codes from past visits, which positive codes in current visit, which negative codes in the current visit, which output code in current visit, value to set output code to)
 
@@ -105,4 +105,4 @@ for l in range(config.label_vocab_size):
         
 rules = rules[:num_label_rules] + bonus_rules + rules[num_label_rules:]
 print('RULE LENGTH: ', len(rules))
-pickle.dump(rules, open('./inpatient_data/rules.pkl', 'wb'))
+pickle.dump(rules, open('../inpatient_data/rules.pkl', 'wb'))

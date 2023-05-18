@@ -112,16 +112,21 @@ for i in tqdm(range(RUNS)):
     consequence_ehr_dataset = pickle.load(open(f'./results/conSequenceDataset_{i}.pkl', 'rb'))
     ccn_ehr_dataset = pickle.load(open(f'./results/ccnDataset_{i}.pkl', 'rb'))
     loss_ehr_dataset = pickle.load(open(f'./results/lossBaselineDataset_{i}.pkl', 'rb'))
+    mpn_ehr_dataset = pickle.load(open(f'./results/mpnDataset_{i}.pkl', 'rb'))
+    
     base_ehr_stats = generate_statistics(base_ehr_dataset)
     processed_ehr_stats = generate_statistics(processed_ehr_dataset)
     consequence_ehr_stats = generate_statistics(consequence_ehr_dataset)
     ccn_ehr_stats = generate_statistics(ccn_ehr_dataset)
     loss_ehr_stats = generate_statistics(loss_ehr_dataset)
+    mpn_ehr_stats = generate_statistics(mpn_ehr_dataset)
+    
     pickle.dump(base_ehr_stats, open(f'results/dataset_stats/Base_Synthetic_Stats_{i}.pkl', 'wb'))
     pickle.dump(processed_ehr_stats, open(f'results/dataset_stats/Processed_Synthetic_Stats_{i}.pkl', 'wb'))
     pickle.dump(consequence_ehr_stats, open(f'results/dataset_stats/ConSequence_Synthetic_Stats_{i}.pkl', 'wb'))
     pickle.dump(ccn_ehr_stats, open(f'results/dataset_stats/CCN_Synthetic_Stats_{i}.pkl', 'wb'))
     pickle.dump(loss_ehr_stats, open(f'results/dataset_stats/Loss_Synthetic_Stats_{i}.pkl', 'wb'))
+    pickle.dump(mpn_ehr_stats, open(f'results/dataset_stats/MPN_Synthetic_Stats_{i}.pkl', 'wb'))
     
 train_ehr_stats = pickle.load(open('results/dataset_stats/Train_Stats.pkl', 'rb'))
 base_ehr_stats = pickle.load(open('results/dataset_stats/Base_Synthetic_Stats_0.pkl', 'rb'))
@@ -129,12 +134,14 @@ processed_ehr_stats = pickle.load(open('results/dataset_stats/Processed_Syntheti
 consequence_ehr_stats = pickle.load(open('results/dataset_stats/ConSequence_Synthetic_Stats_0.pkl', 'rb'))
 ccn_ehr_stats = pickle.load(open('results/dataset_stats/CCN_Synthetic_Stats_0.pkl', 'rb'))
 loss_ehr_stats = pickle.load(open('results/dataset_stats/Loss_Synthetic_Stats_0.pkl', 'rb'))
+mpn_ehr_stats = pickle.load(open('results/dataset_stats/MPN_Synthetic_Stats_0.pkl', 'rb'))
 print(train_ehr_stats["Aggregate"])
 print(base_ehr_stats["Aggregate"])
 print(processed_ehr_stats["Aggregate"])
 print(consequence_ehr_stats["Aggregate"])
 print(ccn_ehr_stats["Aggregate"])
 print(loss_ehr_stats["Aggregate"])
+print(mpn_ehr_stats["Aggregate"])
 
 # Plot per-code statistics
 generate_plots(train_ehr_stats, base_ehr_stats, "Training Data", "Base Synthetic Data")
@@ -142,3 +149,4 @@ generate_plots(train_ehr_stats, processed_ehr_stats, "Training Data", "Post Proc
 generate_plots(train_ehr_stats, consequence_ehr_stats, "Training Data", "ConSequence Synthetic Data")
 generate_plots(train_ehr_stats, ccn_ehr_stats, "Training Data", "CCN Synthetic Data")
 generate_plots(train_ehr_stats, loss_ehr_stats, "Training Data", "Semantic Loss Synthetic Data")
+generate_plots(train_ehr_stats, mpn_ehr_stats, "Training Data", "MultiPlexNet Synthetic Data")

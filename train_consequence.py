@@ -16,7 +16,7 @@ if torch.cuda.is_available():
 
 config = HALOConfig(rules=pickle.load(open('inpatient_data/rules.pkl', 'rb')))
 
-device = torch.device("cuda:6" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 train_ehr_dataset = pickle.load(open('./inpatient_data/trainDataset.pkl', 'rb'))
 val_ehr_dataset = pickle.load(open('./inpatient_data/valDataset.pkl', 'rb'))

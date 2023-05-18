@@ -3,7 +3,6 @@ import pickle
 import random
 import numpy as np
 from tqdm import tqdm
-from sklearn import metrics
 from ruleModels.ccnModel import CCNModel
 from config import HALOConfig
 
@@ -15,7 +14,7 @@ if torch.cuda.is_available():
   torch.cuda.manual_seed_all(SEED)
 
 config = HALOConfig()
-device = torch.device("cuda:7" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 train_ehr_dataset = pickle.load(open('./inpatient_data/trainDataset.pkl', 'rb'))
 test_ehr_dataset = pickle.load(open('./inpatient_data/testDataset.pkl', 'rb'))
@@ -94,16 +93,6 @@ with torch.no_grad():
    label_probs = torch.abs(labels - 1.0 + predictions)
    log_prob = torch.sum(torch.log(label_probs)).cpu().item()
    probability_list.append(log_prob)
-
-# Save intermediate values in case of error
-intermediate = {}
-intermediate["Losses"] = loss_list
-intermediate["Confusion Matrix"] = confusion_matrix
-intermediate["Probabilities"] = probability_list
-intermediate["Num Visits"] = n_visits
-intermediate["Num Positive Codes"] = n_pos_codes
-intermediate["Num Total Codes"] = n_total_codes
-pickle.dump(intermediate, open("./results/testing_stats/CCN_intermediate_results.pkl", "wb"))
 
 #Extract, save, and display test metrics
 avg_loss = np.nanmean(loss_list)

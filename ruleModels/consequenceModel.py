@@ -11,7 +11,7 @@ class ConSequenceModel(HALOModel):
         rulesRO = []
         currPast = None
         currOutputs = set()
-        for i, (past_visits, past_codes, past_non_codes, current_codes, current_non_codes, output_code, output_value) in enumerate(config.rules):
+        for (past_visits, past_codes, past_non_codes, current_codes, current_non_codes, output_code, output_value) in config.rules:
             if currPast != past_visits or any([c in currOutputs for c in current_codes + current_non_codes + [output_code]]):
                 # Add the last group of rules
                 if currPast is not None:

@@ -1095,7 +1095,7 @@ class NormalizedSddNode(SddNode):
 
         import torch
         from torch.distributions.bernoulli import Bernoulli
-        from torch.distribution.categorical import Categorical
+        from torch.distributions.categorical import Categorical
 
         for node in self.as_list(clear_data=clear_data):
 
@@ -1103,7 +1103,7 @@ class NormalizedSddNode(SddNode):
                 inst = torch.tensor(0, device=DEVICE)#torch.cuda.current_device())
 
             elif node.is_true():
-                distribution = Bernoulli(node.theta)
+                distribution = Bernoulli(node.theta.sigmoid())
                 samples = distribution.sample()
                 samples[samples == 0] = samples[samples == 0] - 1
                 inst = samples * node.vtree.var
@@ -1119,7 +1119,7 @@ class NormalizedSddNode(SddNode):
 
             node.inst = inst
 
-        return data
+        return inst
 
     def gumbel_sampling(self, clear_data=False):
         """ Calculate the probabilty of particular
@@ -1129,7 +1129,7 @@ class NormalizedSddNode(SddNode):
 
         import torch
         from torch.distributions.bernoulli import Bernoulli
-        from torch.distribution.categorical import Categorical
+        from torch.distributions.categorical import Categorical
 
         for node in self.as_list(clear_data=clear_data):
 
@@ -1137,6 +1137,7 @@ class NormalizedSddNode(SddNode):
                 inst = torch.tensor(0, device=DEVICE)#torch.cuda.current_device())
 
             elif node.is_true():
+                print(node.theta)
                 distribution = Bernoulli(node.theta)
                 samples = distribution.sample()
                 samples[samples == 0] = samples[samples == 0] - 1

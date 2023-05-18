@@ -9,7 +9,7 @@ class CCNModel(HALOModel):
         Iplus = []
         Iminus = []
         M = []
-        for (past_visits, past_codes, past_non_codes, current_codes, current_non_codes, output_code, output_value) in config.rules:
+        for (past_visits, _, _, current_codes, current_non_codes, output_code, output_value) in config.rules:
             if past_visits != [] or output_value == 0:
                 continue
             

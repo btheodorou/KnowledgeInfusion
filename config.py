@@ -15,22 +15,11 @@ class HALOConfig(object):
             layer_norm_epsilon=1e-5,
             initializer_range=0.02,
             semantic_w=0.01,
-            batch_size=34,
-            sample_batch_size=34,
+            batch_size=32,
+            sample_batch_size=32,
             epoch=500,
             lr=1e-4,
-            rules = pickle.load(open('inpatient_data/rules.pkl', 'rb'))
-                    # [([], [], [], [1,6,8], [], 10, 1), # only current, positive
-                    #  ([], [], [], [2,9,8], [4, 99], 12, 0), # only current, negative
-                    #  ([], [], [], [3,6,8], [], 10, 1), # some nots in current
-                    #  (-1, [2,7,20], [], [1,6,8], [], 11, 1), # all past
-                    #  ([0, 1], [4,5,9], [], [1,6,8], [], 25, 1), # absolute past
-                    #  ([-1, -2], [25, 76, 222], [], [1,6,8], [], 32, 1), # relative past
-                    #  ([0, -1], [65, 77, 99], [], [1,6,8], [], 56, 1), # absolute and relative past
-                    #  ([0], [32, 44], [], [], [], 10, 1)] # no current 
-            
-            # list of (which past visits, which positive codes from past visits, which negative codes from past visits, which positive codes in current visit, which negative codes in the current visit, which output code in current visit, value to set output code to)
-            
+            rules = pickle.load(open('./inpatient_data/rules.pkl', 'rb'))            
     ):
         self.total_vocab_size = total_vocab_size
         self.code_vocab_size = code_vocab_size

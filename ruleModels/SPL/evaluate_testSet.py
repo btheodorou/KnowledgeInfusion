@@ -3,7 +3,6 @@ import torch
 import pickle
 import numpy as np
 from tqdm import tqdm
-from time import time
 from common import *
 from model import HALOModel
 from config import HALOConfig

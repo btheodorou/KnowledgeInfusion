@@ -1,10 +1,6 @@
 import pickle
-import itertools
-import numpy as np
 from tqdm import tqdm
-import matplotlib.pyplot as plt
 from config import HALOConfig
-from sklearn.metrics import r2_score
 
 config = HALOConfig()
 RUNS = 25
@@ -42,22 +38,26 @@ def evaluateDataset(dataset, rules):
   return results
   
 # Extract and save statistics
-for i in tqdm(range(10)):
-  # base_ehr_dataset = pickle.load(open(f'./results/baseDataset_{i}.pkl', 'rb'))
-  # processed_ehr_dataset = pickle.load(open(f'./results/postProcessedDataset_{i}.pkl', 'rb'))
+for i in tqdm(range(1)):
+  base_ehr_dataset = pickle.load(open(f'./results/baseDataset_{i}.pkl', 'rb'))
+  processed_ehr_dataset = pickle.load(open(f'./results/postProcessedDataset_{i}.pkl', 'rb'))
   consequence_ehr_dataset = pickle.load(open(f'./results/conSequenceDataset_{i}.pkl', 'rb'))
-  # loss_ehr_dataset = pickle.load(open(f'./results/lossBaselineDataset_{i}.pkl', 'rb'))
-  # ccn_ehr_dataset = pickle.load(open(f'./results/ccnDataset_{i}.pkl', 'rb'))
+  loss_ehr_dataset = pickle.load(open(f'./results/lossBaselineDataset_{i}.pkl', 'rb'))
+  ccn_ehr_dataset = pickle.load(open(f'./results/ccnDataset_{i}.pkl', 'rb'))
+  mpn_ehr_dataet = pickle.load(open(f'./results/mpnDataset_{i}.pkl', 'rb'))
 
-  # base_violations = evaluateDataset(base_ehr_dataset, config.rules)
-  # processed_violations = evaluateDataset(processed_ehr_dataset, config.rules)
+  base_violations = evaluateDataset(base_ehr_dataset, config.rules)
+  processed_violations = evaluateDataset(processed_ehr_dataset, config.rules)
   consequence_violations = evaluateDataset(consequence_ehr_dataset, config.rules)
-  # loss_violations = evaluateDataset(loss_ehr_dataset, config.rules)
-  # ccn_violations = evaluateDataset(ccn_ehr_dataset, config.rules)
-  # pickle.dump(base_violations, open(f'results/violation_stats/Base_Violation_Stats_{i}.pkl', 'wb'))
-  # pickle.dump(processed_violations, open(f'results/violation_stats/Processed_Violation_Stats_{i}.pkl', 'wb'))
+  loss_violations = evaluateDataset(loss_ehr_dataset, config.rules)
+  ccn_violations = evaluateDataset(ccn_ehr_dataset, config.rules)
+  mpn_violtions = evaluateDataset(mpn_ehr_dataet, config.rules)
+  
+  pickle.dump(base_violations, open(f'results/violation_stats/Base_Violation_Stats_{i}.pkl', 'wb'))
+  pickle.dump(processed_violations, open(f'results/violation_stats/Processed_Violation_Stats_{i}.pkl', 'wb'))
   pickle.dump(consequence_violations, open(f'results/violation_stats/ConSequence_Violation_Stats_{i}.pkl', 'wb'))
-  # pickle.dump(loss_violations, open(f'results/violation_stats/Loss_Violation_Stats_{i}.pkl', 'wb'))
-  # pickle.dump(ccn_violations, open(f'results/violation_stats/CCN_Violation_Stats_{i}.pkl', 'wb'))
+  pickle.dump(loss_violations, open(f'results/violation_stats/Loss_Violation_Stats_{i}.pkl', 'wb'))
+  pickle.dump(ccn_violations, open(f'results/violation_stats/CCN_Violation_Stats_{i}.pkl', 'wb'))
+  pickle.dump(mpn_violtions, open(f'results/violation_stats/MPN_Violation_Stats_{i}.pkl', 'wb'))
 
 # LAST 11 ARE STATIC

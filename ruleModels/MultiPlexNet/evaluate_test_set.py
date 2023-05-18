@@ -3,7 +3,8 @@ import pickle
 import random
 import numpy as np
 from tqdm import tqdm
-from model import HALOModel
+from sklearn import metrics
+from ruleModels.mpnModel import MultiPlexNetModel
 from config import HALOConfig
 
 SEED = 4
@@ -17,8 +18,8 @@ config = HALOConfig()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-train_ehr_dataset = pickle.load(open('./inpatient_data/trainDataset.pkl', 'rb'))
-test_ehr_dataset = pickle.load(open('./inpatient_data/testDataset.pkl', 'rb'))
+train_ehr_dataset = pickle.load(open('../../inpatient_data/trainDataset.pkl', 'rb'))
+test_ehr_dataset = pickle.load(open('../../inpatient_data/testDataset.pkl', 'rb'))
 train_c = set([c for p in train_ehr_dataset for v in p['visits'] for c in v])
 test_ehr_dataset = [{'labels': p['labels'], 'visits': [[c for c in v if c in train_c] for v in p['visits'][:96]]} for p in test_ehr_dataset]
 
@@ -48,8 +49,8 @@ def conf_mat(x, y):
   return np.array([[totalfalse - falsepos, falsepos], #true negatives, false positives
                    [totaltrue - truepos, truepos]]) #false negatives, true positives
 
-model = HALOModel(config).to(device)
-checkpoint = torch.load('./save/base_model', map_location=torch.device(device))
+model = MultiPlexNetModel(config).to(device)
+checkpoint = torch.load('./save/mpn_model', map_location=torch.device(device))
 model.load_state_dict(checkpoint['model'])
 
 confusion_matrix = None
@@ -67,7 +68,7 @@ with torch.no_grad():
    batch_mask = torch.tensor(batch_mask, dtype=torch.float32).to(device)
    
    # Get batch outputs
-   test_loss, predictions, labels = model(batch_ehr, position_ids=None, ehr_labels=batch_ehr, ehr_masks=batch_mask)
+   _, predictions, labels = model(batch_ehr, position_ids=None, ehr_labels=batch_ehr, ehr_masks=batch_mask)
    batch_mask_array = batch_mask.squeeze().cpu().detach().numpy()
    rounded_preds = np.around(predictions.squeeze().cpu().detach().numpy()).transpose((2,0,1)) 
    rounded_preds = rounded_preds + batch_mask_array - 1 # Setting the masked visits to be -1 to be ignored by the confusion matrix
@@ -75,9 +76,6 @@ with torch.no_grad():
    true_values = labels.squeeze().cpu().detach().numpy().transpose((2,0,1))
    true_values = true_values + batch_mask_array - 1 # Setting the masked visits to be -1 to be ignored by the confusion matrix
    true_values = true_values.flatten()
-
-   # Append test lost
-   loss_list.append(test_loss.cpu().detach().numpy())
    
    # Add number of visits and codes
    n_visits += torch.sum(batch_mask).cpu().item()
@@ -96,7 +94,6 @@ with torch.no_grad():
    probability_list.append(log_prob)
 
 #Extract, save, and display test metrics
-avg_loss = np.nanmean(loss_list)
 tn, fp, fn, tp = confusion_matrix.ravel()
 acc = (tn + tp)/(tn+fp+fn+tp)
 prc = tp/(tp+fp)
@@ -108,7 +105,6 @@ pp_positive = np.exp(-log_probability/n_pos_codes)
 pp_possible = np.exp(-log_probability/n_total_codes)
 
 metrics_dict = {}
-metrics_dict['Test Loss'] = avg_loss
 metrics_dict['Confusion Matrix'] = confusion_matrix
 metrics_dict['Accuracy'] = acc
 metrics_dict['Precision'] = prc
@@ -118,9 +114,9 @@ metrics_dict['Test Log Probability'] = log_probability
 metrics_dict['Perplexity Per Visit'] = pp_visit
 metrics_dict['Perplexity Per Positive Code'] = pp_positive
 metrics_dict['Perplexity Per Possible Code'] = pp_possible
-pickle.dump(metrics_dict, open("./results/testing_stats/Base_Metrics.pkl", "wb"))
+pickle.dump(metrics_dict, open("../../results/testing_stats/Base_Metrics.pkl", "wb"))
 
-print("Average Test Loss: ", avg_loss)
+#print("Average Test Loss: ", avg_loss)
 print("Confusion Matrix: ", confusion_matrix)
 print('Accuracy: ', acc)
 print('Precision: ', prc)

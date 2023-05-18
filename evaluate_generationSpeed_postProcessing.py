@@ -4,14 +4,13 @@ import pickle
 import random
 import numpy as np
 from tqdm import tqdm
-from sklearn import metrics
 from model import HALOModel
 from config import HALOConfig
 
 RUNS = 25
 config = HALOConfig()
 NUM_GENERATIONS = 10000
-device = torch.device("cuda:7" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 rules = pickle.load(open('inpatient_data/rules.pkl', 'rb'))
 
 def sample_sequence(model, length, context, batch_size, device='cuda', sample=True):

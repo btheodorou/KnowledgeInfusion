@@ -43,7 +43,7 @@ def sample_sequence(model, length, context, batch_size, device='cuda', sample=Tr
       next = model.sample(prev)
       theta = gate(next)
       cmpe.set_params(theta)
-      res = cmpe.get_mpe_inst(next.size(0))
+      res = cmpe.get_mpe_inst(next.size(0)) # TODO: This to be replaced with sampling
       next = (res > 0).float()
       prev = torch.cat((prev, next.unsqueeze(1)), dim=1)
       
